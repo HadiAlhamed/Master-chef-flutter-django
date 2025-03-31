@@ -7,6 +7,7 @@ import 'package:testing_api/models/menu_items_page.dart';
 import 'package:testing_api/services/apis_services/auth_apis/auth_apis.dart';
 import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
 import 'package:testing_api/text_styles.dart';
+import 'package:testing_api/widgets/drawer_tile.dart';
 import 'package:testing_api/widgets/menu_item_tile.dart';
 
 class Menu extends StatefulWidget {
@@ -83,34 +84,17 @@ class _MenuState extends State<Menu> {
               ),
             ),
             //user stuff
-            ListTile(
-              title: const Text(
-                "My Cart",
-                style: btitleTextStyle2,
-              ),
-              subtitle: const Text("show my cart", style: subtitleTextStyle),
-              trailing: const Icon(
-                Icons.shopping_cart,
-                color: Colors.amber,
-              ),
+            DrawerTile(
+              title: "My Cart",
+              subtitle: "show my cart",
+              icon: Icons.shopping_cart,
             ),
-            ListTile(
-              title: const Text("Categories", style: btitleTextStyle2),
-              subtitle: const Text("explore food categories",
-                  style: subtitleTextStyle),
-              trailing: const Icon(
-                Icons.category,
-                color: Colors.amber,
-              ),
+            DrawerTile(
+              title: "Orders",
+              subtitle: "show my orders",
+              icon: Icons.lock_clock,
             ),
-            ListTile(
-              title: const Text("Orders", style: btitleTextStyle2),
-              subtitle: const Text("show my orders", style: subtitleTextStyle),
-              trailing: const Icon(
-                Icons.lock_clock,
-                color: Colors.amber,
-              ),
-            ),
+
             Divider(),
           ],
         ),
