@@ -4,6 +4,7 @@ import 'package:testing_api/auth/login.dart';
 import 'package:testing_api/models/category.dart';
 import 'package:testing_api/models/menu_item.dart';
 import 'package:testing_api/models/menu_items_page.dart';
+import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/apis_services/auth_apis/auth_apis.dart';
 import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
 import 'package:testing_api/text_styles.dart';
@@ -20,11 +21,14 @@ class Menu extends StatefulWidget {
 class _MenuState extends State<Menu> {
   List<MenuItem> menuItems = [];
   bool isManager = false;
+  bool isDelivery = false;
+
   bool isLoading = true;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    isManager = Api.box.read("role") == 'manager';
+    isDelivery = Api.box.read("role") == 'delivery';
     fetchMenuItems();
     for (var item in menuItems) {
       print(item.title);
@@ -94,8 +98,25 @@ class _MenuState extends State<Menu> {
               subtitle: "show my orders",
               icon: Icons.lock_clock,
             ),
-
             Divider(),
+            //delivery part
+            if (isDelivery || isManager)
+              DrawerTile(
+                title: 'Assigned Orders',
+                subtitle: 'show orders assigned by manager',
+                icon: Icons.food_bank,
+              ),
+            if (isDelivery  || isManager) Divider(),
+            if (isManager)
+              DrawerTile(
+                  title: "New Menu Item",
+                  subtitle: "add new menu item to the current menu",
+                  icon: Icons.add_card),
+            if (isManager)
+              DrawerTile(
+                  title: "Manage Orders",
+                  subtitle: "view and assign orders to delivery crew",
+                  icon: Icons.manage_accounts),
           ],
         ),
       ),

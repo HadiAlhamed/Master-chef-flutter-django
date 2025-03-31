@@ -1,6 +1,7 @@
 import 'package:testing_api/models/category.dart';
 
 class MenuItem {
+  final int id;
   final String title;
   final String price; // Kept as String to match API's decimal format
   final bool featured;
@@ -8,6 +9,7 @@ class MenuItem {
   final Category category;
 
   MenuItem({
+    required this.id,
     required this.title,
     required this.price,
     required this.featured,
@@ -17,6 +19,7 @@ class MenuItem {
 
   Map<String, dynamic> toApiJson() {
     return {
+      'id': id,
       'title': title,
       'price': price, // Send as decimal string
       'featured': featured,
@@ -30,6 +33,7 @@ class MenuItem {
 
   factory MenuItem.fromJson(Map<String, dynamic> json) {
     return MenuItem(
+      id: json['id'] as int,
       title: json["title"],
       price: json["price"], // Ensure correct type
       featured: json["featured"],
