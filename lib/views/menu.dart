@@ -9,6 +9,7 @@ import 'package:testing_api/services/apis_services/auth_apis/auth_apis.dart';
 import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
 import 'package:testing_api/text_styles.dart';
 import 'package:testing_api/widgets/drawer_tile.dart';
+import 'package:testing_api/widgets/manager_drawer.dart';
 import 'package:testing_api/widgets/menu_item_tile.dart';
 
 class Menu extends StatefulWidget {
@@ -70,56 +71,7 @@ class _MenuState extends State<Menu> {
                 },
               ),
             ),
-      drawer: Drawer(
-        child: ListView(
-          padding: const EdgeInsets.all(8),
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(),
-              child: Text(
-                'MasterChef',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: "Lobster",
-                  fontWeight: FontWeight.w800,
-                  fontSize: 30,
-                  color: Colors.amber,
-                ),
-              ),
-            ),
-            //user stuff
-            DrawerTile(
-              title: "My Cart",
-              subtitle: "show my cart",
-              icon: Icons.shopping_cart,
-            ),
-            DrawerTile(
-              title: "Orders",
-              subtitle: "show my orders",
-              icon: Icons.lock_clock,
-            ),
-            Divider(),
-            //delivery part
-            if (isDelivery || isManager)
-              DrawerTile(
-                title: 'Assigned Orders',
-                subtitle: 'show orders assigned by manager',
-                icon: Icons.food_bank,
-              ),
-            if (isDelivery  || isManager) Divider(),
-            if (isManager)
-              DrawerTile(
-                  title: "New Menu Item",
-                  subtitle: "add new menu item to the current menu",
-                  icon: Icons.add_card),
-            if (isManager)
-              DrawerTile(
-                  title: "Manage Orders",
-                  subtitle: "view and assign orders to delivery crew",
-                  icon: Icons.manage_accounts),
-          ],
-        ),
-      ),
+      drawer: ManagerDrawer(),
       drawerEnableOpenDragGesture: true,
     );
   }
