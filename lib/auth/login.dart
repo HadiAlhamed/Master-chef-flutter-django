@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/auth/signup.dart';
 import 'package:testing_api/controllers/passwordController.dart';
+import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/apis_services/auth_apis/auth_apis.dart';
+import 'package:testing_api/services/apis_services/group_apis/role_api.dart';
 import 'package:testing_api/views/menu.dart';
 import 'package:testing_api/widgets/auth_input.dart';
 import 'package:testing_api/widgets/my_button.dart';
@@ -89,6 +91,8 @@ class Login extends StatelessWidget {
                         //if result true go to home page
                         //else show an error message
                         if (result) {
+                          await RoleApi.getRole();
+                          
                           Get.off(
                             () => Menu(),
                             duration: const Duration(milliseconds: 500),
