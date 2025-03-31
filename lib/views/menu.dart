@@ -7,6 +7,7 @@ import 'package:testing_api/models/menu_items_page.dart';
 import 'package:testing_api/services/apis_services/auth_apis/auth_apis.dart';
 import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
 import 'package:testing_api/text_styles.dart';
+import 'package:testing_api/widgets/menu_item_tile.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -57,28 +58,9 @@ class _MenuState extends State<Menu> {
               child: ListView.builder(
                 itemCount: menuItems.length,
                 itemBuilder: (context, index) {
-                  return Card(
-                    // color: const Color.fromARGB(255, 210, 186, 186),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(10),
-                      title: Text(
-                        menuItems[index].title,
-                        style: TextStyle(
-                          fontFamily: "Lobster",
-                          color: Colors.amber,
-                          fontSize: 20,
-                        ),
-                      ),
-                      subtitle: Text(
-                        "${menuItems[index].category.title} , ${menuItems[index].price} \$",
-                        style: TextStyle(
-                          fontFamily: "Lobster",
-                        ),
-                      ),
-                      trailing: menuItems[index].featured
-                          ? const Icon(Icons.star, color: Colors.orange)
-                          : null,
-                    ),
+                  return MenuItemTile(
+                    menuItem: menuItems[index],
+                    index: index,
                   );
                 },
               ),
@@ -129,9 +111,7 @@ class _MenuState extends State<Menu> {
                 color: Colors.amber,
               ),
             ),
-            Divider(
-               
-            ),
+            Divider(),
           ],
         ),
       ),
