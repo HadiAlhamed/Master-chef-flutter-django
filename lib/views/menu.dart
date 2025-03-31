@@ -17,6 +17,7 @@ class Menu extends StatefulWidget {
 
 class _MenuState extends State<Menu> {
   List<MenuItem> menuItems = [];
+  bool isManager = false;
   bool isLoading = true;
   @override
   void initState() {
@@ -56,25 +57,28 @@ class _MenuState extends State<Menu> {
               child: ListView.builder(
                 itemCount: menuItems.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    contentPadding: const EdgeInsets.all(10),
-                    title: Text(
-                      menuItems[index].title,
-                      style: TextStyle(
-                        fontFamily: "Lobster",
-                        color: Colors.amber,
-                        fontSize: 20,
+                  return Card(
+                    // color: const Color.fromARGB(255, 210, 186, 186),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(10),
+                      title: Text(
+                        menuItems[index].title,
+                        style: TextStyle(
+                          fontFamily: "Lobster",
+                          color: Colors.amber,
+                          fontSize: 20,
+                        ),
                       ),
-                    ),
-                    subtitle: Text(
-                      "${menuItems[index].category.title} , ${menuItems[index].price} \$",
-                      style: TextStyle(
-                        fontFamily: "Lobster",
+                      subtitle: Text(
+                        "${menuItems[index].category.title} , ${menuItems[index].price} \$",
+                        style: TextStyle(
+                          fontFamily: "Lobster",
+                        ),
                       ),
+                      trailing: menuItems[index].featured
+                          ? const Icon(Icons.star, color: Colors.orange)
+                          : null,
                     ),
-                    trailing: menuItems[index].featured
-                        ? const Icon(Icons.star, color: Colors.orange)
-                        : null,
                   );
                 },
               ),
@@ -99,7 +103,7 @@ class _MenuState extends State<Menu> {
             //user stuff
             ListTile(
               title: const Text(
-                "my cart",
+                "My Cart",
                 style: btitleTextStyle2,
               ),
               subtitle: const Text("show my cart", style: subtitleTextStyle),
@@ -109,7 +113,7 @@ class _MenuState extends State<Menu> {
               ),
             ),
             ListTile(
-              title: const Text("categories", style: btitleTextStyle2),
+              title: const Text("Categories", style: btitleTextStyle2),
               subtitle: const Text("explore food categories",
                   style: subtitleTextStyle),
               trailing: const Icon(
@@ -117,7 +121,17 @@ class _MenuState extends State<Menu> {
                 color: Colors.amber,
               ),
             ),
-            Divider(),
+            ListTile(
+              title: const Text("Orders", style: btitleTextStyle2),
+              subtitle: const Text("show my orders", style: subtitleTextStyle),
+              trailing: const Icon(
+                Icons.lock_clock,
+                color: Colors.amber,
+              ),
+            ),
+            Divider(
+               
+            ),
           ],
         ),
       ),
