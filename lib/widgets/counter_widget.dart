@@ -14,22 +14,31 @@ class CounterWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final MenuItemCounterController counterController =
         Get.find<MenuItemCounterController>();
-    return Row(
-      children: [
-        TextButton(
+    return SizedBox(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
             onPressed: () {
+              print("index : $index");
               counterController.decrementCounter(index);
             },
-            child: const Text("-")),
-        TextButton(
+            icon: const Icon(Icons.remove),
+          ),
+          IconButton(
             onPressed: () {
+              print("index : $index");
               counterController.incrementCounter(index);
             },
-            child: const Text("+")),
-        Obx(() {
-          return Text("${counterController.counter[index].value}");
-        })
-      ],
+            icon: const Icon(
+              Icons.add,
+            ),
+          ),
+          Obx(() {
+            return Text("${counterController.counter[index].value}");
+          })
+        ],
+      ),
     );
   }
 }
