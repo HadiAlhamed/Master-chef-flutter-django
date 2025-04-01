@@ -15,3 +15,9 @@ const TextStyle atitleTextStyle2 = TextStyle(
   color: Colors.amber,
   fontFamily: "Lobster",
 );
+const TextStyle atitleTextStyle1 = TextStyle(
+  fontWeight: FontWeight.w700,
+  color: Colors.amber,
+  fontFamily: "Lobster",
+  fontSize: 30,
+);

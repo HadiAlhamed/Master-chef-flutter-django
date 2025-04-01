@@ -17,7 +17,7 @@ class DrawerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: onTap ?? () {},
       child: ListTile(
         title: Text(
           title,
