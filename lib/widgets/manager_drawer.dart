@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:testing_api/views/delivery_crew_page.dart';
+import 'package:testing_api/views/menu.dart';
 import 'package:testing_api/widgets/drawer_tile.dart';
 
 class ManagerDrawer extends StatelessWidget {
@@ -28,17 +31,29 @@ class ManagerDrawer extends StatelessWidget {
               subtitle: "view and assign orders to delivery crew",
               icon: Icons.manage_accounts),
           DrawerTile(
-              title: "Users",
-              subtitle: "view all users of the app",
-              icon: Icons.person),
+            title: "Delivery Crew",
+            subtitle: "view all delivery crew of the app",
+            icon: Icons.pedal_bike,
+            onTap: () {
+              Get.off(
+                () => DeliveryCrewPage(),
+                transition: Transition.leftToRightWithFade,
+                duration: const Duration(milliseconds: 400),
+              );
+            },
+          ),
           DrawerTile(
-              title: "Delivery Crew",
-              subtitle: "view all delivery crew of the app",
-              icon: Icons.pedal_bike),
-          DrawerTile(
-              title: "Menu",
-              subtitle: "view, update or delete all menu items",
-              icon: Icons.menu_book),
+            title: "Menu",
+            subtitle: "view, update or delete all menu items",
+            icon: Icons.menu_book,
+            onTap: () {
+              Get.off(
+                () => Menu(),
+                transition: Transition.leftToRightWithFade,
+                duration: const Duration(milliseconds: 400),
+              );
+            },
+          ),
           DrawerTile(
               title: "Categories",
               subtitle: "view, update or delete all existing categories",

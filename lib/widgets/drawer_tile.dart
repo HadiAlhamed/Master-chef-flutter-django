@@ -5,16 +5,19 @@ class DrawerTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
-  const DrawerTile(
-      {super.key,
-      required this.title,
-      required this.subtitle,
-      required this.icon});
+  final void Function()? onTap;
+  const DrawerTile({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       child: ListTile(
         title: Text(
           title,

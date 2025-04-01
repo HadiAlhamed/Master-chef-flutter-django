@@ -3,18 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:testing_api/Enums/user_role.dart';
 
 import 'package:testing_api/models/menu_item.dart';
+import 'package:testing_api/models/user.dart';
 import 'package:testing_api/widgets/counter_widget.dart';
 
-class MenuItemTile extends StatelessWidget {
-  final MenuItem menuItem;
-  final int index;
+class DeliveryCrewTile extends StatelessWidget {
+  final User user;
+
   final UserRole userRole;
-  const MenuItemTile({
-    super.key,
-    required this.menuItem,
-    required this.index,
-    required this.userRole,
-  });
+
+  const DeliveryCrewTile(
+      {super.key, required this.user, required this.userRole});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +21,7 @@ class MenuItemTile extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.all(10),
         title: Text(
-          menuItem.title,
+          user.username,
           style: TextStyle(
             fontFamily: "Lobster",
             color: Colors.amber,
@@ -31,13 +29,23 @@ class MenuItemTile extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          "${menuItem.category.title} , ${menuItem.price} \$",
+          user.email,
           style: TextStyle(
             fontFamily: "Lobster",
           ),
         ),
-        trailing:
-            userRole == UserRole.Customer ? CounterWidget(index: index) : null,
+        trailing: userRole == UserRole.Manager
+            ? IconButton(
+                onPressed: () {
+                  //delete Delivery guy from here
+                  //apply deleteDeliveryCrewApi here
+                },
+                icon: Icon(
+                  Icons.remove_circle,
+                  color: Colors.red,
+                ),
+              )
+            : null,
       ),
     );
   }
