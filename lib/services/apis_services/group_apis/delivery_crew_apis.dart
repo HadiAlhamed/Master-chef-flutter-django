@@ -72,4 +72,9 @@ class DeliveryCrewApis {
     }
     return false;
   }
+
+  static Future<bool> addDeliveryCrew({required int userId}) async {
+    //implement here
+    return true;
+  }
 }

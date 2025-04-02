@@ -10,23 +10,23 @@ import 'package:testing_api/models/user.dart';
 import 'package:testing_api/services/apis_services/group_apis/delivery_crew_apis.dart';
 import 'package:testing_api/widgets/counter_widget.dart';
 
-class DeliveryCrewTile extends StatelessWidget {
+class CustomerTile extends StatelessWidget {
   final User user;
   final int index;
   final UserRole userRole;
   final bool enable;
-
-  const DeliveryCrewTile(
-      {super.key,
-      required this.user,
-      required this.userRole,
-      required this.index,
-      required this.enable});
+  final bool addToDelivery;
+  const CustomerTile({
+    super.key,
+    required this.user,
+    required this.userRole,
+    required this.index,
+    required this.enable,
+    required this.addToDelivery,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final DeliveryCrewController crewController =
-        Get.find<DeliveryCrewController>();
     return Card(
       // color: const Color.fromARGB(255, 210, 186, 186),
       child: ListTile(
@@ -48,7 +48,7 @@ class DeliveryCrewTile extends StatelessWidget {
         ),
         trailing: userRole == UserRole.Manager
             ? IconButton(
-                onPressed: !enable
+                onPressed: !enable || !addToDelivery
                     ? null
                     : () async {
                         //delete Delivery guy from here
@@ -59,37 +59,23 @@ class DeliveryCrewTile extends StatelessWidget {
                           animType: AnimType.leftSlide,
                           dialogType: DialogType.warning,
                           body: const Text(
-                            "The user will be deleted from Delivery Crew...",
+                            "The user will be added to delivery crew",
                             textAlign: TextAlign.center,
                           ),
-                          btnCancelText: "Delete",
-                          btnOkText: "Cancel",
-                          btnOkOnPress: () {},
-                          btnCancelOnPress: () async {
-                            //delete
-                            bool result =
-                                await DeliveryCrewApis.deleteDeliveryCrew(
-                              userId: user.id,
-                            );
-                            Get.showSnackbar(
-                              GetSnackBar(
-                                duration: const Duration(seconds: 5),
-                                title: "Deleting Delivery Crew",
-                                message: result
-                                    ? "Deleted Successfully"
-                                    : "An error has happened while deleting , try later.",
-                              ),
-                            );
-                            if (result) {
-                              crewController.deleteDeliveryCrew(index);
-                            }
+                          btnCancelText: "Cancel",
+                          btnOkText: "Add",
+                          btnOkOnPress: () async {
+                            //add to delivery crew
                           },
+                          btnCancelOnPress: () {},
                         ).show();
                       },
-                icon: Icon(
-                  Icons.remove_circle,
-                  color: Colors.red,
-                ),
+                icon: addToDelivery
+                    ? Icon(
+                        Icons.add,
+                        color: Colors.green,
+                      )
+                    : const SizedBox.shrink(),
               )
             : null,
       ),

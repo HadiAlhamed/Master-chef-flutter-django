@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:testing_api/views/customers_page.dart';
 import 'package:testing_api/views/delivery_crew_page.dart';
 import 'package:testing_api/views/menu.dart';
 import 'package:testing_api/widgets/drawer_tile.dart';
@@ -39,6 +40,20 @@ class ManagerDrawer extends StatelessWidget {
                 () => DeliveryCrewPage(),
                 transition: Transition.leftToRightWithFade,
                 duration: const Duration(milliseconds: 400),
+              );
+            },
+          ),
+          DrawerTile(
+            title: "Customers",
+            subtitle: "view all customers accounts",
+            icon: Icons.person_2,
+            onTap: () {
+              Get.off(
+                () => CustomersPage(
+                  addToDelivery: false,
+                ),
+                transition: Transition.leftToRightWithFade,
+                duration: const Duration(milliseconds: 200),
               );
             },
           ),

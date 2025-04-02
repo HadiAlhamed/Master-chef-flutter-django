@@ -7,6 +7,7 @@ import 'package:testing_api/models/user_page.dart';
 import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/apis_services/group_apis/delivery_crew_apis.dart';
 import 'package:testing_api/text_styles.dart';
+import 'package:testing_api/views/customers_page.dart';
 import 'package:testing_api/widgets/customer_drawer.dart';
 import 'package:testing_api/widgets/delivery_crew_tile.dart';
 import 'package:testing_api/widgets/manager_drawer.dart';
@@ -62,22 +63,38 @@ class _DeliveryCrewPageState extends State<DeliveryCrewPage> {
           : Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.all(10),
-              child: ListView.builder(
-                itemCount: users.length,
-                itemBuilder: (context, index) {
-                  return Obx(
-                    () {
-                      return DeliveryCrewTile(
-                        user: users[index],
-                        userRole: userRole,
-                        index: index,
-                        enable: !crewController.deleted[index].value,
-                      );
-                    },
-                  );
-                },
-              ),
+              child: users.isEmpty
+                  ? const Text(
+                      "You have no delivery crew.",
+                      style: atitleTextStyle1,
+                    )
+                  : ListView.builder(
+                      itemCount: users.length,
+                      itemBuilder: (context, index) {
+                        return Obx(
+                          () {
+                            return DeliveryCrewTile(
+                              user: users[index],
+                              userRole: userRole,
+                              index: index,
+                              enable: !crewController.deleted[index].value,
+                            );
+                          },
+                        );
+                      },
+                    ),
             ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Get.off(
+            () => CustomersPage(addToDelivery: true),
+            transition: Transition.fade,
+            duration: const Duration(milliseconds: 400),
+          );
+        },
+        label: const Text("Add Delivery"),
+        icon: const Icon(Icons.add),
+      ),
       drawer: userRole == UserRole.Manager
           ? ManagerDrawer()
           : userRole == UserRole.Customer
