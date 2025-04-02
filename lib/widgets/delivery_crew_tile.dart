@@ -86,10 +86,12 @@ class DeliveryCrewTile extends StatelessWidget {
                           },
                         ).show();
                       },
-                icon: Icon(
-                  Icons.remove_circle,
-                  color: Colors.red,
-                ),
+                icon: !enable
+                    ? const SizedBox.shrink()
+                    : Icon(
+                        Icons.remove_circle,
+                        color: Colors.red,
+                      ),
               )
             : null,
       ),

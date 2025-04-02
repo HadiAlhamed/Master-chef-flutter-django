@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
+import 'package:testing_api/controllers/customer_controller.dart';
 import 'package:testing_api/models/user.dart';
 import 'package:testing_api/services/apis_services/group_apis/delivery_crew_apis.dart';
 
@@ -22,6 +24,7 @@ class CustomerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final CustomerController controller = Get.find<CustomerController>();
     return Card(
       // color: const Color.fromARGB(255, 210, 186, 186),
       child: ListTile(
@@ -36,7 +39,7 @@ class CustomerTile extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          enable ? user.email : "${user.email} (DELETED FROM DELIVERY)",
+          enable ? user.email : "${user.email} (ADDED TO DELIVERY)",
           style: TextStyle(
             fontFamily: "Lobster",
           ),
@@ -65,11 +68,28 @@ class CustomerTile extends StatelessWidget {
                                 await DeliveryCrewApis.addDeliveryCrew(
                               userId: user.id,
                             );
+
+                            Get.showSnackbar(
+                              GetSnackBar(
+                                duration: const Duration(seconds: 5),
+                                title: result ? "Info" : "Error",
+                                message: result
+                                    ? "User Added To Delivery Crew"
+                                    : "An Error Has Occurred, try later.",
+                                icon: Icon(result ? Icons.check : Icons.error),
+                                backgroundColor:
+                                    result ? Colors.green : Colors.red,
+                              ),
+                            );
+                            if (result) {
+                              //do something to customerController
+                              controller.deleteCustomer(index);
+                            }
                           },
                           btnCancelOnPress: () {},
                         ).show();
                       },
-                icon: addToDelivery
+                icon: addToDelivery && enable
                     ? Icon(
                         Icons.add,
                         color: Colors.green,

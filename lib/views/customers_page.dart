@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
-import 'package:testing_api/controllers/delivery_crew_controller.dart';
+import 'package:testing_api/controllers/customer_controller.dart';
 import 'package:testing_api/models/user.dart';
-import 'package:testing_api/models/user_page.dart';
 import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/apis_services/group_apis/customer_apis.dart';
-import 'package:testing_api/services/apis_services/group_apis/delivery_crew_apis.dart';
 import 'package:testing_api/text_styles.dart';
 import 'package:testing_api/widgets/customer_drawer.dart';
 import 'package:testing_api/widgets/customer_tile.dart';
-import 'package:testing_api/widgets/delivery_crew_tile.dart';
 import 'package:testing_api/widgets/manager_drawer.dart';
 
 class CustomersPage extends StatefulWidget {
@@ -25,7 +22,7 @@ class _CustomersPageState extends State<CustomersPage> {
   List<User> customers = <User>[];
   bool isLoading = true;
   UserRole userRole = UserRole.Customer;
-
+  final CustomerController customerController = Get.find<CustomerController>();
   @override
   void initState() {
     super.initState();
@@ -62,12 +59,25 @@ class _CustomersPageState extends State<CustomersPage> {
                   : ListView.builder(
                       itemCount: customers.length,
                       itemBuilder: (context, index) {
-                        return CustomerTile(
-                          user: customers[index],
-                          userRole: userRole,
-                          index: index,
-                          enable: true,
-                          addToDelivery: widget.addToDelivery,
+                        if (!widget.addToDelivery) {
+                          return CustomerTile(
+                            user: customers[index],
+                            userRole: userRole,
+                            index: index,
+                            enable: true,
+                            addToDelivery: widget.addToDelivery,
+                          );
+                        }
+                        return Obx(
+                          () {
+                            return CustomerTile(
+                              user: customers[index],
+                              userRole: userRole,
+                              index: index,
+                              enable: !customerController.deleted[index].value,
+                              addToDelivery: widget.addToDelivery,
+                            );
+                          },
                         );
                       },
                     ),
@@ -84,5 +94,6 @@ class _CustomersPageState extends State<CustomersPage> {
   @override
   void dispose() {
     super.dispose();
+    customerController.init();
   }
 }
