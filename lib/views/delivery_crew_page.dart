@@ -10,6 +10,7 @@ import 'package:testing_api/text_styles.dart';
 import 'package:testing_api/views/customers_page.dart';
 import 'package:testing_api/widgets/customer_drawer.dart';
 import 'package:testing_api/widgets/delivery_crew_tile.dart';
+import 'package:testing_api/widgets/main_appbar.dart';
 import 'package:testing_api/widgets/manager_drawer.dart';
 
 class DeliveryCrewPage extends StatefulWidget {
@@ -57,7 +58,7 @@ class _DeliveryCrewPageState extends State<DeliveryCrewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: MainAppBar(),
       body: isLoading
           ? Center(child: const CircularProgressIndicator())
           : Container(

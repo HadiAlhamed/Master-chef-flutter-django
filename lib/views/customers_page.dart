@@ -8,6 +8,7 @@ import 'package:testing_api/services/apis_services/group_apis/customer_apis.dart
 import 'package:testing_api/text_styles.dart';
 import 'package:testing_api/widgets/customer_drawer.dart';
 import 'package:testing_api/widgets/customer_tile.dart';
+import 'package:testing_api/widgets/main_appbar.dart';
 import 'package:testing_api/widgets/manager_drawer.dart';
 
 class CustomersPage extends StatefulWidget {
@@ -45,7 +46,7 @@ class _CustomersPageState extends State<CustomersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: MainAppBar(),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Container(

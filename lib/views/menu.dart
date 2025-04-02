@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
-import 'package:testing_api/auth/login.dart';
-import 'package:testing_api/models/category.dart';
 import 'package:testing_api/models/menu_item.dart';
 import 'package:testing_api/models/menu_items_page.dart';
 import 'package:testing_api/services/api.dart';
-import 'package:testing_api/services/apis_services/auth_apis/auth_apis.dart';
 import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
-import 'package:testing_api/text_styles.dart';
 import 'package:testing_api/widgets/customer_drawer.dart';
-import 'package:testing_api/widgets/drawer_tile.dart';
+import 'package:testing_api/widgets/main_appbar.dart';
 import 'package:testing_api/widgets/manager_drawer.dart';
 import 'package:testing_api/widgets/menu_item_tile.dart';
 
@@ -56,7 +51,7 @@ class _MenuState extends State<Menu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: MainAppBar(),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Container(
