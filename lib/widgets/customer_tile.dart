@@ -1,14 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
-import 'package:testing_api/controllers/delivery_crew_controller.dart';
-
-import 'package:testing_api/models/menu_item.dart';
 import 'package:testing_api/models/user.dart';
 import 'package:testing_api/services/apis_services/group_apis/delivery_crew_apis.dart';
-import 'package:testing_api/widgets/counter_widget.dart';
 
 class CustomerTile extends StatelessWidget {
   final User user;
@@ -66,6 +61,10 @@ class CustomerTile extends StatelessWidget {
                           btnOkText: "Add",
                           btnOkOnPress: () async {
                             //add to delivery crew
+                            bool result =
+                                await DeliveryCrewApis.addDeliveryCrew(
+                              userId: user.id,
+                            );
                           },
                           btnCancelOnPress: () {},
                         ).show();

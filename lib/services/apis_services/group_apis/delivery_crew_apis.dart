@@ -8,7 +8,6 @@ import 'package:testing_api/services/http_client/my_http_client.dart';
 
 class DeliveryCrewApis {
   static const String deliveryApi = "/api/groups/delivery-crew/users/";
-
   static Future<UserPage> getAllDeliveryCrew({String? url}) async {
     print("Fetching all delivery crew ... ");
     try {
@@ -41,7 +40,7 @@ class DeliveryCrewApis {
   }
 
   static Future<bool> deleteDeliveryCrew({required int userId}) async {
-    print("Deleting user with id $userId");
+    print("Deleting user with id $userId from delivery crew...");
     try {
       final http.Response response = await MyHttpClient.client.delete(
         Uri.parse("${Api.baseUrl}$deliveryApi$userId/"),
@@ -75,6 +74,38 @@ class DeliveryCrewApis {
 
   static Future<bool> addDeliveryCrew({required int userId}) async {
     //implement here
-    return true;
+    print("Adding user with id $userId to delivery crew ... ");
+    try {
+      final http.Response response = await MyHttpClient.client.post(
+        Uri.parse("${Api.baseUrl}$deliveryApi$userId/"),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': Api.box.read('csrfToken') ?? '',
+          if (Api.box.read('sessionId') != null)
+            'Cookie':
+                'sessionid=${Api.box.read('sessionId')}; csrftoken=${Api.box.read('csrfToken')}',
+        },
+        body: jsonEncode(
+          {
+            'user_id': userId,
+          },
+        ),
+      );
+
+      if (response.statusCode == 201) {
+        print("User added to Delivery crew...");
+        return true;
+      } else if (response.statusCode == 403) {
+        print(
+            "Failed to delete Delivery crew : Permission denied. Only managers can perform this action.!!!");
+      } else if (response.statusCode == 404) {
+        print("Failed to add Delivery crew : User Not Found!!!");
+      } else {
+        print("Failed to add delivery crew : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Network Error : $e");
+    }
+    return false;
   }
 }
