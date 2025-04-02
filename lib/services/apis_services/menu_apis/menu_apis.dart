@@ -66,4 +66,34 @@ class MenuApis {
     }
     return MenuItemsPage(menuItems: [], nextPageUrl: null);
   }
+
+  static Future<bool> deleteMenuItem({required int menuItemId}) async {
+    print("deleting Menu Item with id $menuItemId......");
+    try {
+      final http.Response response = await MyHttpClient.client.post(
+        Uri.parse("${Api.baseUrl}/api/menu-items/$menuItemId"),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': Api.box.read('csrfToken') ?? '',
+          if (Api.box.read('sessionId') != null)
+            'Cookie':
+                'sessionid=${Api.box.read('sessionId')}; csrftoken=${Api.box.read('csrfToken')}',
+        },
+        body: jsonEncode({
+          'id': menuItemId,
+        }),
+      );
+      print("response status code : ${response.statusCode}");
+      if (response.statusCode == 201) {
+        print("Post Menu Items Succeed!!!!");
+
+        return true;
+      } else {
+        print("Post Menu Items Faild!!!");
+      }
+    } catch (e) {
+      print("Network Error : $e");
+    }
+    return false;
+  }
 }

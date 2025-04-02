@@ -33,7 +33,9 @@ class DeliveryCrewTile extends StatelessWidget {
         enabled: enable,
         contentPadding: const EdgeInsets.all(10),
         title: Text(
-          "${index + 1} ${user.username}",
+          enable
+              ? "${index + 1} ${user.username}"
+              : "${index + 1} ${user.email} (DELETED FROM DELIVERY)",
           style: TextStyle(
             fontFamily: "Lobster",
             color: Colors.amber,
@@ -41,7 +43,7 @@ class DeliveryCrewTile extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          enable ? user.email : "${user.email} (DELETED FROM DELIVERY)",
+          user.email,
           style: TextStyle(
             fontFamily: "Lobster",
           ),

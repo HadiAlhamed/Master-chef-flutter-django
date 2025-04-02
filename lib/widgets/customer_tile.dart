@@ -31,7 +31,9 @@ class CustomerTile extends StatelessWidget {
         enabled: enable,
         contentPadding: const EdgeInsets.all(10),
         title: Text(
-          "${index + 1} ${user.username}",
+          enable
+              ? "${index + 1} ${user.username}"
+              : "${index + 1} ${user.username} (ADDED TO DELIVERY)",
           style: TextStyle(
             fontFamily: "Lobster",
             color: Colors.amber,
@@ -39,7 +41,7 @@ class CustomerTile extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          enable ? user.email : "${user.email} (ADDED TO DELIVERY)",
+          user.email,
           style: TextStyle(
             fontFamily: "Lobster",
           ),

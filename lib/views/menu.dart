@@ -65,6 +65,7 @@ class _MenuState extends State<Menu> {
                 itemCount: menuItems.length,
                 itemBuilder: (context, index) {
                   return MenuItemTile(
+                    enable: true,
                     menuItem: menuItems[index],
                     index: index,
                     userRole: userRole,
