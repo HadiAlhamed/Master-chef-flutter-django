@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:testing_api/auth/login.dart';
+import 'package:testing_api/services/apis_services/auth_apis/auth_apis.dart';
+import 'package:testing_api/widgets/my_snackbar.dart';
 
 class MainAppBar extends AppBar {
   MainAppBar({super.key})
@@ -7,7 +11,23 @@ class MainAppBar extends AppBar {
             // Your custom icon button
             IconButton(
               icon: const Icon(Icons.exit_to_app),
-              onPressed: () async {},
+              onPressed: () async {
+                bool result = await AuthApis.logout();
+                if (result) {
+                  Get.off(
+                    () => Login(),
+                    transition: Transition.native,
+                    duration: const Duration(milliseconds: 400),
+                  );
+                } else {
+                  Get.showSnackbar(
+                    MySnackbar(
+                        success: false,
+                        title: 'Error',
+                        message: 'An Error Has Occurred, Try Later.'),
+                  );
+                }
+              },
             ),
           ],
         );
