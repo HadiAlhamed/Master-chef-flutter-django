@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
 
 import 'package:testing_api/models/menu_item.dart';
+import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
 import 'package:testing_api/widgets/counter_widget.dart';
 
 class MenuItemTile extends StatelessWidget {
@@ -47,7 +48,6 @@ class MenuItemTile extends StatelessWidget {
                     onPressed: !enable
                         ? null
                         : () async {
-                            bool result = true;
                             AwesomeDialog(
                               context: context,
                               alignment: Alignment.center,
@@ -62,7 +62,8 @@ class MenuItemTile extends StatelessWidget {
                               btnOkOnPress: () {},
                               btnCancelOnPress: () async {
                                 //delete menu item api
-                                bool result = true;
+                                bool result = await MenuApis.deleteMenuItem(
+                                    menuItemId: menuItem.id);
                                 Get.showSnackbar(
                                   GetSnackBar(
                                     duration: const Duration(seconds: 5),

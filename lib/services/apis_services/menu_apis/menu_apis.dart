@@ -70,8 +70,8 @@ class MenuApis {
   static Future<bool> deleteMenuItem({required int menuItemId}) async {
     print("deleting Menu Item with id $menuItemId......");
     try {
-      final http.Response response = await MyHttpClient.client.post(
-        Uri.parse("${Api.baseUrl}/api/menu-items/$menuItemId"),
+      final http.Response response = await MyHttpClient.client.delete(
+        Uri.parse("${Api.baseUrl}/api/menu-items/$menuItemId/"),
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': Api.box.read('csrfToken') ?? '',
@@ -84,12 +84,12 @@ class MenuApis {
         }),
       );
       print("response status code : ${response.statusCode}");
-      if (response.statusCode == 201) {
-        print("Post Menu Items Succeed!!!!");
+      if (response.statusCode == 204) {
+        print("deleting Menu item Succeed!!!!");
 
         return true;
       } else {
-        print("Post Menu Items Faild!!!");
+        print("deleting Menu item Faild!!!");
       }
     } catch (e) {
       print("Network Error : $e");
