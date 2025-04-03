@@ -12,6 +12,7 @@ import 'package:testing_api/widgets/customer_drawer.dart';
 import 'package:testing_api/widgets/main_appbar.dart';
 import 'package:testing_api/widgets/manager_drawer.dart';
 import 'package:testing_api/widgets/menu_item_tile.dart';
+import 'package:testing_api/widgets/my_button.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -155,6 +156,22 @@ class _MenuState extends State<Menu> {
                 );
               },
             ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              // value: ,
+              items: [],
+              // hint: ,
+              onChanged: (val) {
+                //needs a controller
+              },
+              // validator: ,
+            ),
+            const SizedBox(height: 16),
+            MyButton(
+              onPressed: () {},
+              title: 'Add Menu Item',
+              color: Colors.amberAccent,
+            )
           ],
         ),
       ),
