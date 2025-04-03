@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/auth/login.dart';
 import 'package:testing_api/bindings/my_bindings.dart';
-import 'package:testing_api/controllers/passwordController.dart';
 import 'package:get_storage/get_storage.dart';
 
 void main() async {
@@ -22,9 +21,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            foregroundColor: Colors.amber,
+            backgroundColor: Colors.white,
+          )),
       initialBinding: MyBindings(),
       home: Login(),
     );
