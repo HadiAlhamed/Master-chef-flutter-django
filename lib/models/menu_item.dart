@@ -1,20 +1,20 @@
 import 'package:testing_api/models/category.dart';
 
 class MenuItem {
-  final int id;
+  final int? id;
   final String title;
   final String price; // Kept as String to match API's decimal format
   final bool featured;
   final int? categoryId;
-  final Category category;
+  final Category? category;
 
   MenuItem({
-    required this.id,
+    this.id,
     required this.title,
     required this.price,
     required this.featured,
     this.categoryId,
-    required this.category,
+    this.category,
   });
 
   Map<String, dynamic> toApiJson() {
@@ -25,8 +25,8 @@ class MenuItem {
       'featured': featured,
       'category_id': categoryId,
       'category': {
-        'slug': category.slug,
-        'title': category.title,
+        'slug': category?.slug ?? '',
+        'title': category?.title ?? '',
       },
     };
   }

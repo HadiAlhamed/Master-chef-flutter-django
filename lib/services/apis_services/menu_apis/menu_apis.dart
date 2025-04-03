@@ -10,7 +10,8 @@ import 'package:testing_api/services/http_client/my_http_client.dart';
 class MenuApis {
   static Future<bool> postMenuItem({required MenuItem menuItem}) async {
     print("Post Menu Item ......");
-    print(menuItem);
+    print(
+        'title: ${menuItem.title},price: ${menuItem.price},    feature: ${menuItem.featured}, category_id: ${menuItem.categoryId}');
     try {
       final http.Response response = await MyHttpClient.client.post(
         Uri.parse("${Api.baseUrl}/api/menu-items/"),
@@ -21,7 +22,12 @@ class MenuApis {
             'Cookie':
                 'sessionid=${Api.box.read('sessionId')}; csrftoken=${Api.box.read('csrfToken')}',
         },
-        body: jsonEncode(menuItem.toApiJson()),
+        body: jsonEncode({
+          'title': menuItem.title,
+          'price': menuItem.price,
+          'featured': menuItem.featured,
+          'category_id': menuItem.categoryId,
+        }),
       );
       print("response status code : ${response.statusCode}");
       if (response.statusCode == 201) {

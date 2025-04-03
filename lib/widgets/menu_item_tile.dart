@@ -36,7 +36,7 @@ class MenuItemTile extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          "${menuItem.category.title} , ${menuItem.price} \$",
+          "${menuItem.category!.title} , ${menuItem.price} \$",
           style: TextStyle(
             fontFamily: "Lobster",
           ),
@@ -63,7 +63,7 @@ class MenuItemTile extends StatelessWidget {
                               btnCancelOnPress: () async {
                                 //delete menu item api
                                 bool result = await MenuApis.deleteMenuItem(
-                                    menuItemId: menuItem.id);
+                                    menuItemId: menuItem.id!);
                                 Get.showSnackbar(
                                   GetSnackBar(
                                     duration: const Duration(seconds: 5),

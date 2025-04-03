@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:testing_api/Enums/user_role.dart';
+import 'package:testing_api/controllers/chosen_category_controller.dart';
 import 'package:testing_api/controllers/featured_controller.dart';
+import 'package:testing_api/models/category.dart';
+import 'package:testing_api/models/category_page.dart';
 import 'package:testing_api/models/menu_item.dart';
 import 'package:testing_api/models/menu_items_page.dart';
 import 'package:testing_api/services/api.dart';
+import 'package:testing_api/services/apis_services/category_apis/category_apis.dart';
 import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
 import 'package:testing_api/text_styles.dart';
 import 'package:testing_api/widgets/auth_input.dart';
@@ -23,9 +28,12 @@ class Menu extends StatefulWidget {
 
 class _MenuState extends State<Menu> {
   List<MenuItem> menuItems = [];
+  List<String> categoriesName = [];
+  Map<String, int> idOfCategory = <String, int>{};
   UserRole userRole = UserRole.Customer;
+  final ChosenCategoryController categoryController =
+      Get.find<ChosenCategoryController>();
   bool isLoading = true;
-  bool? isFeatured = true;
   @override
   void initState() {
     super.initState();
@@ -34,10 +42,10 @@ class _MenuState extends State<Menu> {
     } else if (Api.box.read("role") == 'delivery') {
       userRole = UserRole.Delivery;
     }
-    fetchMenuItems();
+    _fetchData();
   }
 
-  Future<void> fetchMenuItems() async {
+  Future<void> _fetchData() async {
     MenuItemsPage menuItemsPage = await MenuApis.getMenuItems();
     for (var item in menuItemsPage.menuItems) {
       menuItems.add(item);
@@ -47,6 +55,23 @@ class _MenuState extends State<Menu> {
           await MenuApis.getMenuItems(url: menuItemsPage.nextPageUrl);
       for (var item in menuItemsPage.menuItems) {
         menuItems.add(item);
+      }
+    }
+    CategoryPage categoryPage = await CategoryApis.getAllCategories();
+    if (categoryPage.categories.isNotEmpty) {
+      categoryController.changeCategory(
+          category: categoryPage.categories[0].title);
+    }
+    for (var item in categoryPage.categories) {
+      categoriesName.add(item.title);
+      idOfCategory[item.title] = item.id;
+    }
+    while (categoryPage.nextPageUrl != null) {
+      categoryPage =
+          await CategoryApis.getAllCategories(url: categoryPage.nextPageUrl);
+      for (var item in categoryPage.categories) {
+        categoriesName.add(item.title);
+        idOfCategory[item.title] = item.id;
       }
     }
     setState(() {
@@ -83,7 +108,7 @@ class _MenuState extends State<Menu> {
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
-              child: newMenuItemBottomSheet(),
+              child: _newMenuItemBottomSheet(),
             ),
             isDismissible: true,
             enableDrag: true,
@@ -102,12 +127,13 @@ class _MenuState extends State<Menu> {
     );
   }
 
-  Form newMenuItemBottomSheet() {
+  Form _newMenuItemBottomSheet() {
     final TextEditingController titleController = TextEditingController();
     final TextEditingController priceController = TextEditingController();
     final FeaturedController featuredController =
         Get.find<FeaturedController>();
     final GlobalKey<FormState> globalKey = GlobalKey<FormState>();
+
     return Form(
       key: globalKey,
       child: SingleChildScrollView(
@@ -120,10 +146,14 @@ class _MenuState extends State<Menu> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            AuthInput(title: 'Title'),
+            AuthInput(
+              title: 'Title',
+              controller: titleController,
+            ),
             const SizedBox(height: 16),
             AuthInput(
               title: 'Price',
+              controller: priceController,
             ),
             const SizedBox(
               height: 16,
@@ -157,18 +187,61 @@ class _MenuState extends State<Menu> {
               },
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              // value: ,
-              items: [],
-              // hint: ,
-              onChanged: (val) {
-                //needs a controller
-              },
-              // validator: ,
-            ),
+            Obx(() {
+              return DropdownButtonFormField<String>(
+                decoration: InputDecoration(
+                  // 🔹 (2) Styles the input field
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ), // Adds a visible border around the dropdown
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12), // Adds padding inside the field
+                ),
+                isExpanded: true,
+                validator: (value) => value == null || value == ""
+                    ? "Please select a category"
+                    : null,
+                hint: const Text("Choose a category"),
+                value: categoryController.chosen.value,
+                items: categoriesName.map((String categoryName) {
+                  return DropdownMenuItem<String>(
+                    value: categoryName,
+                    child: Text(categoryName),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  categoryController.changeCategory(category: newValue ?? "");
+                },
+              );
+            }),
             const SizedBox(height: 16),
             MyButton(
-              onPressed: () {},
+              onPressed: () async {
+                if (globalKey.currentState!.validate()) {
+                  bool result = await MenuApis.postMenuItem(
+                    menuItem: MenuItem(
+                      categoryId:
+                          idOfCategory[categoryController.chosen.value]!,
+                      title: titleController.text.trim(),
+                      price: priceController.text.trim(),
+                      featured: featuredController.isFeatured.value,
+                    ),
+                  );
+                  if (result) {
+                    Get.off(
+                      () => Menu(),
+                      transition: Transition.fade,
+                      duration: const Duration(milliseconds: 300),
+                    );
+                  } else {
+                    Get.snackbar(
+                      'Error',
+                      'Failed to add new menu item , try later.',
+                      snackPosition: SnackPosition.TOP,
+                    );
+                  }
+                }
+              },
               title: 'Add Menu Item',
               color: Colors.amberAccent,
             )
