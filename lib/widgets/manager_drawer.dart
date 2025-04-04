@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:testing_api/views/categories_page.dart';
 import 'package:testing_api/views/customers_page.dart';
 import 'package:testing_api/views/delivery_crew_page.dart';
 import 'package:testing_api/views/menu.dart';
@@ -70,17 +71,15 @@ class ManagerDrawer extends StatelessWidget {
             },
           ),
           DrawerTile(
-              title: "Categories",
-              subtitle: "view, update or delete all existing categories",
-              icon: Icons.category_rounded),
-          DrawerTile(
-              title: "Add Menu Item",
-              subtitle: "add new menu item to the current menu",
-              icon: Icons.add_card),
-          DrawerTile(
-              title: "Add Category",
-              subtitle: "add new category to the current categories",
-              icon: Icons.category_outlined),
+            title: "Categories",
+            subtitle: "view, update or delete all existing categories",
+            icon: Icons.category_rounded,
+            onTap: () => Get.off(
+              () => CategoriesPage(),
+              transition: Transition.leftToRightWithFade,
+              duration: const Duration(milliseconds: 400),
+            ),
+          ),
         ],
       ),
     );

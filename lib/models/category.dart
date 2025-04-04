@@ -1,10 +1,10 @@
 class Category {
-  final int id;
+  final int? id;
   final String slug;
   final String title;
 
   Category({
-    required this.id,
+    this.id,
     required this.slug,
     required this.title,
   });
@@ -18,7 +18,6 @@ class Category {
   }
   Map<String, dynamic> toApiJson() {
     return {
-      'id': id,
       'slug': slug,
       'title': title,
     };
