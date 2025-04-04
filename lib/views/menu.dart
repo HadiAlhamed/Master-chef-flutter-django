@@ -67,14 +67,14 @@ class _MenuState extends State<Menu> {
             category: categoryPage.categories[0].title);
       }
       for (var item in categoryPage.categories) {
-        categoryController.categoriesName.add(item.title);
+        categoryController.addCategory(category: item);
         categoryController.setCategoryId(name: item.title, id: item.id!);
       }
       while (categoryPage.nextPageUrl != null) {
         categoryPage =
             await CategoryApis.getAllCategories(url: categoryPage.nextPageUrl);
         for (var item in categoryPage.categories) {
-          categoryController.categoriesName.add(item.title);
+          categoryController.addCategory(category: item);
           categoryController.setCategoryId(name: item.title, id: item.id!);
         }
       }
@@ -148,8 +148,7 @@ class _MenuState extends State<Menu> {
   @override
   void dispose() {
     // TODO: implement dispose
+
     super.dispose();
-    categoryController.clear();
-    menuController.clear();
   }
 }

@@ -8,6 +8,7 @@ class MenuItemController extends GetxController {
     (item) => false,
   );
   bool needUpdate = true;
+
   void addMenuItem({required MenuItem menuItem}) {
     menuItems.add(menuItem);
   }
