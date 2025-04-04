@@ -40,4 +40,32 @@ class CategoryApis {
     }
     return CategoryPage(categories: [], nextPageUrl: null);
   }
+
+  static Future<bool> addNewCategory({required Category category}) async {
+    print("Fetching categories of this page ... ");
+    try {
+      final http.Response response = await MyHttpClient.client.post(
+        Uri.parse('${Api.baseUrl}$categoryApi'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': Api.box.read('csrfToken') ?? '',
+          // Explicitly send cookies if needed
+          if (Api.box.read('sessionId') != null)
+            'Cookie':
+                'sessionid=${Api.box.read('sessionId')}; csrftoken=${Api.box.read('csrfToken')}',
+        },
+        body: jsonEncode(category.toApiJson()),
+      );
+      if (response.statusCode == 201) {
+        debugPrint("adding new category succeed ...");
+        return true;
+      } else {
+        debugPrint("Falid Adding new Category !! : ${response.statusCode} ...");
+        debugPrint(response.body);
+      }
+    } catch (e) {
+      print("Network Error : $e");
+    }
+    return false;
+  }
 }
