@@ -3,18 +3,18 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:testing_api/Enums/user_role.dart';
-import 'package:testing_api/controllers/customer_controller.dart';
+import 'package:testing_api/controllers/chosen_category_controller.dart';
 import 'package:testing_api/models/category.dart';
-import 'package:testing_api/models/user.dart';
-import 'package:testing_api/services/apis_services/group_apis/delivery_crew_apis.dart';
+import 'package:testing_api/services/apis_services/category_apis/category_apis.dart';
 import 'package:testing_api/widgets/category_bottomsheet.dart';
 
 class CategoryTile extends StatelessWidget {
   final Category category;
   final int index;
   final bool enable;
-  const CategoryTile({
+  final ChosenCategoryController categoryController =
+      Get.find<ChosenCategoryController>();
+  CategoryTile({
     super.key,
     required this.category,
     required this.index,
@@ -23,7 +23,6 @@ class CategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CustomerController controller = Get.find<CustomerController>();
     print("Category tile index : $index");
     return Card(
       // color: const Color.fromARGB(255, 210, 186, 186),
@@ -83,7 +82,8 @@ class CategoryTile extends StatelessWidget {
                     btnOkText: "Cancel",
                     btnOkOnPress: () {},
                     btnCancelOnPress: () async {
-                      bool result = true;
+                      bool result = await CategoryApis.deleteCategory(
+                          categoryId: category.id!);
                       //implement delete category here
 
                       Get.showSnackbar(
@@ -98,8 +98,8 @@ class CategoryTile extends StatelessWidget {
                         ),
                       );
                       if (result) {
-                        //do something to customerController
-                        controller.deleteCustomer(index);
+                        categoryController.deleted[index].value = true;
+                        categoryController.changeNeedUpdate(true);
                       }
                     },
                   ).show();

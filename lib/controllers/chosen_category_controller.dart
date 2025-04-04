@@ -6,7 +6,7 @@ class ChosenCategoryController extends GetxController {
   List<String> categoriesName = [];
   Map<String, int> idOfCategory = <String, int>{};
   RxList<Category> categories = <Category>[].obs;
-  List<bool> deleted = List.generate(1050, (item) => false);
+  List<RxBool> deleted = List.generate(1050, (item) => false.obs);
   bool needUpdate = true;
   RxBool isLoading = true.obs;
   //needs update if a successful add new category happend
@@ -19,6 +19,10 @@ class ChosenCategoryController extends GetxController {
   void addCategory({required Category category}) {
     categoriesName.add(category.title);
     categories.add(category);
+  }
+
+  void deleteCategoryAt(int index) {
+    deleted[index].value = true;
   }
 
   void changeCategoryAt({required int index, required Category category}) {
@@ -43,11 +47,16 @@ class ChosenCategoryController extends GetxController {
     needUpdate = value;
   }
 
+  void changeIsLoading(bool value) {
+    isLoading.value = value;
+  }
+
   void clear() {
     categoriesName.clear();
     idOfCategory.clear();
     categories.clear();
-    deleted = List.generate(1050, (item) => false);
+    deleted = List.generate(1050, (item) => false.obs);
     needUpdate = true;
+    isLoading.value = true;
   }
 }

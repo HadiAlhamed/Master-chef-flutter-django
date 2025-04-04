@@ -33,24 +33,16 @@ class _CategoriesPageState extends State<CategoriesPage> {
     } else if (Api.box.read("role").toString().toLowerCase() == 'delivery') {
       userRole = UserRole.Delivery;
     }
+    categoryController.changeIsLoading(true);
     WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
   }
-
-  // void showLoading() {
-  //   Get.dialog(
-  //     const Center(child: CircularProgressIndicator()),
-  //     barrierDismissible: false, // Prevent closing until loading is done
-  //   );
-  // }
-
-  // void hideLoading() {
-  //   if (Get.isDialogOpen ?? false) Get.back(); // Close dialog
-  // }
 
   Future<void> _fetchData() async {
     //fetching categories
     print("fetching categories _fetch data ...");
     if (categoryController.needUpdate) {
+      print("updating categories list ... ");
+      categoryController.clear();
       CategoryPage categoryPage = await CategoryApis.getAllCategories();
       if (categoryPage.categories.isNotEmpty) {
         categoryController.changeCategory(
@@ -70,7 +62,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
       }
       categoryController.changeNeedUpdate(false);
     }
-    categoryController.isLoading.value = false;
+    categoryController.changeIsLoading(false);
   }
 
   @override
@@ -97,7 +89,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                         child: Obx(
                           () => CategoryTile(
                             category: categoryController.categories[index],
-                            enable: !categoryController.deleted[index],
+                            enable: !categoryController.deleted[index].value,
                             index: index,
                           ),
                         ),
