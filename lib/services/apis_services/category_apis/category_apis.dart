@@ -95,4 +95,34 @@ class CategoryApis {
     }
     return false;
   }
+
+  static Future<bool> deleteCategory({required int categoryId}) async {
+    print("deleting category with id $categoryId ... ");
+    try {
+      final http.Response response = await MyHttpClient.client.delete(
+        Uri.parse('${Api.baseUrl}$categoryApi$categoryId/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': Api.box.read('csrfToken') ?? '',
+          // Explicitly send cookies if needed
+          if (Api.box.read('sessionId') != null)
+            'Cookie':
+                'sessionid=${Api.box.read('sessionId')}; csrftoken=${Api.box.read('csrfToken')}',
+        },
+        body: jsonEncode({
+          'id': categoryId,
+        }),
+      );
+      if (response.statusCode == 204) {
+        debugPrint("Category deleted successfully ...");
+        return true;
+      } else {
+        debugPrint("Falid Deleting  Category !! : ${response.statusCode} ...");
+        debugPrint(response.body);
+      }
+    } catch (e) {
+      print("Network Error : $e");
+    }
+    return false;
+  }
 }
