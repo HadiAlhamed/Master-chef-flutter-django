@@ -3,10 +3,12 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
+import 'package:testing_api/controllers/menu_item_controller.dart';
 
 import 'package:testing_api/models/menu_item.dart';
 import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
 import 'package:testing_api/widgets/counter_widget.dart';
+import 'package:testing_api/widgets/menu_bottomsheet.dart';
 
 class MenuItemTile extends StatelessWidget {
   final MenuItem menuItem;
@@ -23,9 +25,29 @@ class MenuItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final MenuItemController menuController = Get.find<MenuItemController>();
     return Card(
       // color: const Color.fromARGB(255, 210, 186, 186),
       child: ListTile(
+        onTap: !enable
+            ? null
+            : () async {
+                print("Menu Item Id from Menu Item Tile : ${menuItem.id}");
+
+                await Get.bottomSheet(
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    child: MenuBottomsheet(
+                      menuItem: menuItem,
+                    ),
+                  ),
+                );
+              },
         contentPadding: const EdgeInsets.all(10),
         title: Text(
           enable ? menuItem.title : "${menuItem.title} (DELETED)",
@@ -79,6 +101,9 @@ class MenuItemTile extends StatelessWidget {
                                 );
                                 if (result) {
                                   //do something to menuItem Controller
+                                  menuController.deleteMenuItem(index);
+                                  menuController.changeNeedUpdate(true);
+                                  
                                 }
                               },
                             ).show();
