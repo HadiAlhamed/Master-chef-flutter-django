@@ -3,19 +3,14 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
 import 'package:testing_api/controllers/chosen_category_controller.dart';
-import 'package:testing_api/controllers/menu_item_controller.dart';
 import 'package:testing_api/models/category_page.dart';
-import 'package:testing_api/models/menu_items_page.dart';
 import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/apis_services/category_apis/category_apis.dart';
-import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
 import 'package:testing_api/widgets/category_bottomsheet.dart';
 import 'package:testing_api/widgets/category_tile.dart';
 import 'package:testing_api/widgets/customer_drawer.dart';
 import 'package:testing_api/widgets/main_appbar.dart';
 import 'package:testing_api/widgets/manager_drawer.dart';
-import 'package:testing_api/widgets/menu_bottomsheet.dart';
-import 'package:testing_api/widgets/menu_item_tile.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key});
@@ -28,10 +23,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
   UserRole userRole = UserRole.Customer;
   final ChosenCategoryController categoryController =
       Get.find<ChosenCategoryController>();
-  bool isLoading = true;
   @override
   void initState() {
     print("Categories Page Loaded");
+    print("categories needs to change : ${categoryController.needUpdate}");
     super.initState();
     if (Api.box.read("role").toString().toLowerCase() == 'manager') {
       userRole = UserRole.Manager;
@@ -40,6 +35,17 @@ class _CategoriesPageState extends State<CategoriesPage> {
     }
     WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
   }
+
+  // void showLoading() {
+  //   Get.dialog(
+  //     const Center(child: CircularProgressIndicator()),
+  //     barrierDismissible: false, // Prevent closing until loading is done
+  //   );
+  // }
+
+  // void hideLoading() {
+  //   if (Get.isDialogOpen ?? false) Get.back(); // Close dialog
+  // }
 
   Future<void> _fetchData() async {
     //fetching categories
@@ -51,57 +57,62 @@ class _CategoriesPageState extends State<CategoriesPage> {
             category: categoryPage.categories[0].title);
       }
       for (var item in categoryPage.categories) {
-        categoryController.categories.add(item);
-        categoryController.categoriesName.add(item.title);
+        categoryController.addCategory(category: item);
         categoryController.setCategoryId(name: item.title, id: item.id!);
       }
       while (categoryPage.nextPageUrl != null) {
         categoryPage =
             await CategoryApis.getAllCategories(url: categoryPage.nextPageUrl);
         for (var item in categoryPage.categories) {
-          categoryController.categories.add(item);
-          categoryController.categoriesName.add(item.title);
+          categoryController.addCategory(category: item);
           categoryController.setCategoryId(name: item.title, id: item.id!);
         }
       }
       categoryController.changeNeedUpdate(false);
     }
-
-    setState(() {
-      isLoading = false;
-    });
+    categoryController.isLoading.value = false;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainAppBar(),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : GetBuilder<ChosenCategoryController>(
-              builder: (controller) => Container(
-                margin: const EdgeInsets.all(10),
-                child: ListView.builder(
-                  itemCount: categoryController.categories.length,
-                  itemBuilder: (context, index) {
-                    return AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 400),
-                      child: SlideAnimation(
-                        verticalOffset: 50.0,
-                        child: FadeInAnimation(
-                          child: CategoryTile(
+      body: Obx(
+        () {
+          if (categoryController.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return Container(
+            margin: const EdgeInsets.all(10),
+            child: ListView.builder(
+              itemCount: categoryController.categories.length,
+              itemBuilder: (context, index) {
+                try {
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 400),
+                    child: SlideAnimation(
+                      verticalOffset: 50.0,
+                      child: FadeInAnimation(
+                        child: Obx(
+                          () => CategoryTile(
                             category: categoryController.categories[index],
                             enable: !categoryController.deleted[index],
                             index: index,
                           ),
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
+                    ),
+                  );
+                } catch (e) {
+                  print("Error in listing categories : $e");
+                }
+                return null;
+              },
             ),
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await Get.bottomSheet(
@@ -134,6 +145,5 @@ class _CategoriesPageState extends State<CategoriesPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    categoryController.clear();
   }
 }

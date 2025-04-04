@@ -8,6 +8,7 @@ import 'package:testing_api/controllers/customer_controller.dart';
 import 'package:testing_api/models/category.dart';
 import 'package:testing_api/models/user.dart';
 import 'package:testing_api/services/apis_services/group_apis/delivery_crew_apis.dart';
+import 'package:testing_api/widgets/category_bottomsheet.dart';
 
 class CategoryTile extends StatelessWidget {
   final Category category;
@@ -23,9 +24,28 @@ class CategoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final CustomerController controller = Get.find<CustomerController>();
+    print("Category tile index : $index");
     return Card(
       // color: const Color.fromARGB(255, 210, 186, 186),
       child: ListTile(
+        onTap: !enable //update category item
+            ? null
+            : () async {
+                Get.bottomSheet(
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    child: CategoryBottomsheet(
+                      category: category,
+                      index: index,
+                    ),
+                  ),
+                );
+              },
         enabled: enable,
         contentPadding: const EdgeInsets.all(10),
         title: Text(
