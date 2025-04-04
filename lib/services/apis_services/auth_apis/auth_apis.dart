@@ -1,15 +1,16 @@
-import 'dart:io';
-
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:get_storage/get_storage.dart';
 import 'package:testing_api/controllers/chosen_category_controller.dart';
 import 'package:testing_api/controllers/menu_item_controller.dart';
 import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/http_client/my_http_client.dart';
 
 class AuthApis {
+  static final MenuItemController menuItemController =
+      Get.find<MenuItemController>();
+  static final ChosenCategoryController categoryController =
+      Get.find<ChosenCategoryController>();
   // Enhanced cookie/CSRF handling
   static String? _extractCookie(String? headers, String name) {
     return RegExp('$name=([^;]+)').firstMatch(headers ?? '')?.group(1);
@@ -74,10 +75,7 @@ class AuthApis {
     await Api.box.remove('authHeaders');
     await Api.box.remove('csrfToken');
     await Api.box.remove('sessionId');
-    final MenuItemController menuItemController =
-        Get.find<MenuItemController>();
-    final ChosenCategoryController categoryController =
-        Get.find<ChosenCategoryController>();
+
     menuItemController.clear();
     categoryController.clear();
     MyHttpClient.client.close(); // Properly close old client
