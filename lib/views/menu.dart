@@ -38,48 +38,49 @@ class _MenuState extends State<Menu> {
     } else if (Api.box.read("role").toString().toLowerCase() == 'delivery') {
       userRole = UserRole.Delivery;
     }
-    if (menuController.needUpdate) {
-      menuController.clear();
-      categoryController.clear();
-      WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
-    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
   }
 
   Future<void> _fetchData() async {
     //fetching menu items
-
-    MenuItemsPage menuItemsPage = await MenuApis.getMenuItems();
-    for (var item in menuItemsPage.menuItems) {
-      menuController.addMenuItem(menuItem: item);
-    }
-    while (menuItemsPage.nextPageUrl != null) {
-      menuItemsPage =
-          await MenuApis.getMenuItems(url: menuItemsPage.nextPageUrl);
+    if (menuController.needUpdate) {
+      MenuItemsPage menuItemsPage = await MenuApis.getMenuItems();
       for (var item in menuItemsPage.menuItems) {
         menuController.addMenuItem(menuItem: item);
       }
+      while (menuItemsPage.nextPageUrl != null) {
+        menuItemsPage =
+            await MenuApis.getMenuItems(url: menuItemsPage.nextPageUrl);
+        for (var item in menuItemsPage.menuItems) {
+          menuController.addMenuItem(menuItem: item);
+        }
+      }
+      menuController.changeNeedUpdate(false);
     }
 
     //fetching categories
-    CategoryPage categoryPage = await CategoryApis.getAllCategories();
-    if (categoryPage.categories.isNotEmpty) {
-      categoryController.changeCategory(
-          category: categoryPage.categories[0].title);
-    }
-    for (var item in categoryPage.categories) {
-      categoryController.categoriesName.add(item.title);
-      categoryController.setCategoryId(name: item.title, id: item.id);
-    }
-    while (categoryPage.nextPageUrl != null) {
-      categoryPage =
-          await CategoryApis.getAllCategories(url: categoryPage.nextPageUrl);
+    if (categoryController.needUpdate) {
+      CategoryPage categoryPage = await CategoryApis.getAllCategories();
+      if (categoryPage.categories.isNotEmpty) {
+        categoryController.changeCategory(
+            category: categoryPage.categories[0].title);
+      }
       for (var item in categoryPage.categories) {
         categoryController.categoriesName.add(item.title);
-        categoryController.setCategoryId(name: item.title, id: item.id);
+        categoryController.setCategoryId(name: item.title, id: item.id!);
       }
+      while (categoryPage.nextPageUrl != null) {
+        categoryPage =
+            await CategoryApis.getAllCategories(url: categoryPage.nextPageUrl);
+        for (var item in categoryPage.categories) {
+          categoryController.categoriesName.add(item.title);
+          categoryController.setCategoryId(name: item.title, id: item.id!);
+        }
+      }
+      categoryController.changeNeedUpdate(false);
     }
 
-    menuController.changeNeedUpdate(false);
     setState(() {
       isLoading = false;
     });
