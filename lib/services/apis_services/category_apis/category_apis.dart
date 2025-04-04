@@ -68,4 +68,31 @@ class CategoryApis {
     }
     return false;
   }
+
+  static Future<bool> updateCategory({required Category category}) async {
+    print("Fetching categories of this page ... ");
+    try {
+      final http.Response response = await MyHttpClient.client.put(
+        Uri.parse('${Api.baseUrl}$categoryApi${category.id}/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': Api.box.read('csrfToken') ?? '',
+          // Explicitly send cookies if needed
+          if (Api.box.read('sessionId') != null)
+            'Cookie':
+                'sessionid=${Api.box.read('sessionId')}; csrftoken=${Api.box.read('csrfToken')}',
+        },
+        body: jsonEncode(category.toApiJson()),
+      );
+      if (response.statusCode == 200) {
+        debugPrint("updating category succeed ...");
+        return true;
+      } else {
+        debugPrint("Failed updating Category !! : ${response.statusCode} ...");
+      }
+    } catch (e) {
+      print("Network Error : $e");
+    }
+    return false;
+  }
 }
