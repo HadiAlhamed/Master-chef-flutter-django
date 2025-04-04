@@ -5,9 +5,10 @@ class ChosenCategoryController extends GetxController {
   RxString chosen = "".obs;
   List<String> categoriesName = [];
   Map<String, int> idOfCategory = <String, int>{};
-  List<Category> categories = [];
+  RxList<Category> categories = <Category>[].obs;
   List<bool> deleted = List.generate(1050, (item) => false);
   bool needUpdate = true;
+  RxBool isLoading = true.obs;
   //needs update if a successful add new category happend
   //or update a category
   //same with menu item
@@ -15,8 +16,23 @@ class ChosenCategoryController extends GetxController {
     chosen.value = category;
   }
 
-  void addCategoryName({required String name}) {
-    categoriesName.add(name);
+  void addCategory({required Category category}) {
+    categoriesName.add(category.title);
+    categories.add(category);
+  }
+
+  void changeCategoryAt({required int index, required Category category}) {
+    print('new category title : ${category.title}');
+    print("🔵 Before Update: ${categories[index].title}");
+
+    categories[index] = category;
+    categoriesName[index] = category.title;
+    print("🟢 After Update: ${categories[index].title}");
+    print("🔄 Triggering refresh...");
+
+    categories.refresh(); // Force GetX to update UI
+
+    print("✅ Updated RxList. Categories Length: ${categories.length}");
   }
 
   void setCategoryId({required String name, required int id}) {
