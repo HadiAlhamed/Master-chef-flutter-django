@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
 import 'package:testing_api/controllers/chosen_category_controller.dart';
@@ -13,7 +14,7 @@ import 'package:testing_api/widgets/main_appbar.dart';
 import 'package:testing_api/widgets/manager_drawer.dart';
 import 'package:testing_api/widgets/menu_bottomsheet.dart';
 import 'package:testing_api/widgets/menu_item_tile.dart';
-import 'package:animation_list/animation_list.dart';
+
 class Menu extends StatefulWidget {
   const Menu({super.key});
 
@@ -96,11 +97,20 @@ class _MenuState extends State<Menu> {
                 child: ListView.builder(
                   itemCount: menuController.menuItems.length,
                   itemBuilder: (context, index) {
-                    return MenuItemTile(
-                      enable: !menuController.deleted[index],
-                      menuItem: menuController.menuItems[index],
-                      index: index,
-                      userRole: userRole,
+                    return AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 400),
+                      child: SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: MenuItemTile(
+                            enable: !menuController.deleted[index],
+                            menuItem: menuController.menuItems[index],
+                            index: index,
+                            userRole: userRole,
+                          ),
+                        ),
+                      ),
                     );
                   },
                 ),

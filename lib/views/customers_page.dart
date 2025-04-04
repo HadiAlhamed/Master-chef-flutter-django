@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
 import 'package:testing_api/controllers/customer_controller.dart';
@@ -60,25 +61,34 @@ class _CustomersPageState extends State<CustomersPage> {
                   : ListView.builder(
                       itemCount: customers.length,
                       itemBuilder: (context, index) {
-                        if (!widget.addToDelivery) {
-                          return CustomerTile(
-                            user: customers[index],
-                            userRole: userRole,
-                            index: index,
-                            enable: true,
-                            addToDelivery: widget.addToDelivery,
-                          );
-                        }
-                        return Obx(
-                          () {
-                            return CustomerTile(
-                              user: customers[index],
-                              userRole: userRole,
-                              index: index,
-                              enable: !customerController.deleted[index].value,
-                              addToDelivery: widget.addToDelivery,
-                            );
-                          },
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          child: SlideAnimation(
+                            duration: const Duration(milliseconds: 400),
+                            verticalOffset: 50.0,
+                            child: FadeInAnimation(
+                              child: !widget.addToDelivery
+                                  ? CustomerTile(
+                                      user: customers[index],
+                                      userRole: userRole,
+                                      index: index,
+                                      enable: true,
+                                      addToDelivery: widget.addToDelivery,
+                                    )
+                                  : Obx(
+                                      () {
+                                        return CustomerTile(
+                                          user: customers[index],
+                                          userRole: userRole,
+                                          index: index,
+                                          enable: !customerController
+                                              .deleted[index].value,
+                                          addToDelivery: widget.addToDelivery,
+                                        );
+                                      },
+                                    ),
+                            ),
+                          ),
                         );
                       },
                     ),

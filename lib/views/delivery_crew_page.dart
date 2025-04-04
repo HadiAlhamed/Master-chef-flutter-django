@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
 import 'package:testing_api/controllers/delivery_crew_controller.dart';
@@ -72,15 +73,25 @@ class _DeliveryCrewPageState extends State<DeliveryCrewPage> {
                   : ListView.builder(
                       itemCount: users.length,
                       itemBuilder: (context, index) {
-                        return Obx(
-                          () {
-                            return DeliveryCrewTile(
-                              user: users[index],
-                              userRole: userRole,
-                              index: index,
-                              enable: !crewController.deleted[index].value,
-                            );
-                          },
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 500),
+                          child: SlideAnimation(
+                            horizontalOffset: 70.0,
+                            child: FadeInAnimation(
+                              child: Obx(
+                                () {
+                                  return DeliveryCrewTile(
+                                    user: users[index],
+                                    userRole: userRole,
+                                    index: index,
+                                    enable:
+                                        !crewController.deleted[index].value,
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
                         );
                       },
                     ),
