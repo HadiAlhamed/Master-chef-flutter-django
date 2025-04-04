@@ -43,6 +43,41 @@ class MenuApis {
     return false;
   }
 
+  static Future<bool> updateMenuItem({required MenuItem menuItem}) async {
+    print("updating Menu Item ......");
+    print('id : ${menuItem.id}'
+        'title: ${menuItem.title},price: ${menuItem.price},    feature: ${menuItem.featured}, category_id: ${menuItem.categoryId}');
+    try {
+      final http.Response response = await MyHttpClient.client.put(
+        Uri.parse("${Api.baseUrl}/api/menu-items/${menuItem.id}/"),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': Api.box.read('csrfToken') ?? '',
+          if (Api.box.read('sessionId') != null)
+            'Cookie':
+                'sessionid=${Api.box.read('sessionId')}; csrftoken=${Api.box.read('csrfToken')}',
+        },
+        body: jsonEncode({
+          'title': menuItem.title,
+          'price': menuItem.price,
+          'featured': menuItem.featured,
+          'category_id': menuItem.categoryId,
+        }),
+      );
+      print("response status code : ${response.statusCode}");
+      if (response.statusCode == 200) {
+        print("Updating Menu Item Succeed!!!!");
+
+        return true;
+      } else {
+        print("Updating Menu Items Failed : ${response.body}");
+      }
+    } catch (e) {
+      print("Network Error : $e");
+    }
+    return false;
+  }
+
   static Future<MenuItemsPage> getMenuItems({String? url}) async {
     print("fetching menu items ....");
     try {
