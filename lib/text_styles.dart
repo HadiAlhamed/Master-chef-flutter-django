@@ -5,6 +5,12 @@ const TextStyle subtitleTextStyle = TextStyle(
   color: Colors.grey,
   fontFamily: "Lobster",
 );
+const TextStyle btitleTextStyle1 = TextStyle(
+  fontWeight: FontWeight.w600,
+  color: Colors.black,
+  fontFamily: "Lobster",
+  fontSize: 20,
+);
 const TextStyle btitleTextStyle2 = TextStyle(
   fontWeight: FontWeight.w500,
   color: Colors.black,

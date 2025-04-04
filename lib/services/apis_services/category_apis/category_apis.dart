@@ -14,7 +14,7 @@ class CategoryApis {
     print("Fetching categories of this page ... ");
     try {
       final http.Response response = await MyHttpClient.client.get(
-        Uri.parse(url ?? '${Api.baseUrl}/$categoryApi'),
+        Uri.parse(url ?? '${Api.baseUrl}$categoryApi'),
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': Api.box.read('csrfToken') ?? '',
@@ -33,6 +33,7 @@ class CategoryApis {
         return CategoryPage(categories: list, nextPageUrl: jsonData['next']);
       } else {
         debugPrint("Falid Fetching categories !! : ${response.statusCode} ...");
+        debugPrint(response.body);
       }
     } catch (e) {
       print("Network Error : $e");

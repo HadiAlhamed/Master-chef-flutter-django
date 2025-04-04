@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:testing_api/auth/login.dart';
 import 'package:testing_api/bindings/my_bindings.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:testing_api/views/menu.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +29,9 @@ class MyApp extends StatelessWidget {
             backgroundColor: Colors.white,
           )),
       initialBinding: MyBindings(),
+      getPages: [
+        GetPage(name: '/menu', page: () => Menu()),
+      ],
       home: Login(),
     );
   }

@@ -33,7 +33,7 @@ class MenuItem {
 
   factory MenuItem.fromJson(Map<String, dynamic> json) {
     return MenuItem(
-      id: json['id'] as int,
+      id: json['id'],
       title: json["title"],
       price: json["price"], // Ensure correct type
       featured: json["featured"],
