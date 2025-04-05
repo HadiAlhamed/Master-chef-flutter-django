@@ -4,6 +4,7 @@ class MenuItemCounterController extends GetxController {
   List<RxInt> counter = List.generate(1050, (index) {
     return 0.obs;
   });
+  bool needUpdate = false;
   void incrementCounter(int index) {
     counter[index].value++;
   }
@@ -14,9 +15,12 @@ class MenuItemCounterController extends GetxController {
     }
   }
 
+  void changeNeedUpdate(bool value) => needUpdate = value;
+  
   void clear() {
     counter = List.generate(1050, (index) {
       return 0.obs;
     });
+    needUpdate = false;
   }
 }
