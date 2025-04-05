@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:testing_api/controllers/cart_controller.dart';
 import 'package:testing_api/controllers/chosen_category_controller.dart';
 import 'package:testing_api/controllers/customer_controller.dart';
 import 'package:testing_api/controllers/delivery_crew_controller.dart';
@@ -18,5 +19,6 @@ class MyBindings extends Bindings {
     Get.put(FeaturedController());
     Get.put(ChosenCategoryController());
     Get.put(MenuItemController());
+    Get.put(CartController());
   }
 }
