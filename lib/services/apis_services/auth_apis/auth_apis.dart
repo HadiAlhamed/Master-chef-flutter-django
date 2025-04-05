@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:testing_api/controllers/chosen_category_controller.dart';
 import 'package:testing_api/controllers/menu_item_controller.dart';
+import 'package:testing_api/controllers/menu_item_counter_controller.dart';
+import 'package:testing_api/models/user.dart';
 import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/http_client/my_http_client.dart';
 
@@ -11,6 +13,8 @@ class AuthApis {
       Get.find<MenuItemController>();
   static final ChosenCategoryController categoryController =
       Get.find<ChosenCategoryController>();
+  static final MenuItemCounterController menuItemCounterController =
+      Get.find<MenuItemCounterController>();
   // Enhanced cookie/CSRF handling
   static String? _extractCookie(String? headers, String name) {
     return RegExp('$name=([^;]+)').firstMatch(headers ?? '')?.group(1);
@@ -35,6 +39,7 @@ class AuthApis {
             _extractCookie(response.headers['set-cookie'], 'csrftoken'));
         Api.box.write('sessionId',
             _extractCookie(response.headers['set-cookie'], 'sessionid'));
+        Api.box.write('username', username);
         return true;
       }
     } catch (e) {
@@ -75,9 +80,10 @@ class AuthApis {
     await Api.box.remove('authHeaders');
     await Api.box.remove('csrfToken');
     await Api.box.remove('sessionId');
-
+    await Api.box.remove('username');
     menuItemController.clear();
     categoryController.clear();
+    menuItemCounterController.clear();
     MyHttpClient.client.close(); // Properly close old client
     MyHttpClient.client = http.Client(); //
   }
@@ -109,6 +115,36 @@ class AuthApis {
       }
     } catch (e) {
       print('Network error: $e');
+    }
+    return false;
+  }
+
+  static Future<bool> getCurrentUserInfo() async {
+    print("cookie token ${Api.box.read('csrfToken')}");
+
+    print("sessionid ${Api.box.read('sessionId')}");
+    try {
+      final http.Response response = await MyHttpClient.client.get(
+        Uri.parse("${Api.baseUrl}/auth/users/me/"),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFTokrn': Api.box.read('csrfToken') ?? '',
+          if (Api.box.read('sessionId') != null)
+            'Cookie':
+                'sessionid=${Api.box.read('sessionId')}; csrftoken=${Api.box.read('csrfToken')}',
+        },
+      );
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        Api.box.write('userId', jsonData['id']);
+        print("getting current user info went fine ...");
+
+        return true;
+      } else {
+        print("failed to fetch current user info : ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Network Error: $e');
     }
     return false;
   }

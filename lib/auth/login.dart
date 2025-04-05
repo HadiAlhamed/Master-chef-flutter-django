@@ -92,7 +92,7 @@ class Login extends StatelessWidget {
                         //else show an error message
                         if (result) {
                           await RoleApi.getRole();
-                          
+                          await AuthApis.getCurrentUserInfo();
                           Get.off(
                             () => Menu(),
                             duration: const Duration(milliseconds: 500),
