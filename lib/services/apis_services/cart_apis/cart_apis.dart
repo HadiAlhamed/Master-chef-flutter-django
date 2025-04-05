@@ -11,7 +11,7 @@ import '../../http_client/my_http_client.dart';
 class CartApis {
   static const cartApi = '/api/cart/menu-items/';
   static final CartController cartController = Get.find<CartController>();
-  static Future<bool> postCart(
+  static Future<bool> addCartItem(
       {required int userId,
       required int menuItemId,
       required int quantity}) async {
@@ -50,6 +50,35 @@ class CartApis {
       } else {
         print("Failed to add to cart .... ${response.statusCode}");
         print(response.body);
+      }
+    } catch (e) {
+      print("Network Error : $e");
+    }
+    return false;
+  }
+
+  static Future<bool> deleteAllCartItems() async {
+    print("deleting all cart items ....");
+
+    try {
+      print(" CSRFTOKEN : ${Api.box.read('csrfToken')}");
+
+      final http.Response response = await MyHttpClient.client.post(
+        Uri.parse('${Api.baseUrl}$cartApi'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': Api.box.read('csrfToken') ?? '',
+          if (Api.box.read('sessionId') != null)
+            'Cookie':
+                "sessionid=${Api.box.read('sessionId')}; csrftoken=${Api.box.read('csrfToken')}",
+        },
+      );
+      if (response.statusCode == 204) {
+        print("	All cart items deleted successfully. ...");
+
+        return true;
+      } else {
+        print("Failed to delete all cart items .... ${response.statusCode}");
       }
     } catch (e) {
       print("Network Error : $e");
