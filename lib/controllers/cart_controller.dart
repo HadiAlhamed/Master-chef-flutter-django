@@ -3,6 +3,7 @@ import 'package:testing_api/models/cart_item.dart';
 
 class CartController extends GetxController {
   List<CartItem> cartItems = [];
+  
 
   void addToCart(CartItem cartItem) {
     cartItems.add(cartItem);
@@ -14,5 +15,6 @@ class CartController extends GetxController {
 
   void clear() {
     cartItems.clear();
+
   }
 }

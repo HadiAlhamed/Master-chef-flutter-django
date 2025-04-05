@@ -23,7 +23,12 @@ class CounterWidget extends StatelessWidget {
           IconButton(
             onPressed: () {
               print("index : $index");
-              counterController.decrementCounter(index);
+              if (counterController.counter[index].value > 0) {
+                counterController.decrementCounter(index);
+                if (!counterController.needUpdate) {
+                  counterController.changeNeedUpdate(true);
+                }
+              }
             },
             icon: const Icon(Icons.remove, color: Colors.red),
           ),
@@ -31,6 +36,9 @@ class CounterWidget extends StatelessWidget {
             onPressed: () {
               print("index : $index");
               counterController.incrementCounter(index);
+              if (!counterController.needUpdate) {
+                counterController.changeNeedUpdate(true);
+              }
             },
             icon: const Icon(
               Icons.add,
