@@ -4,9 +4,11 @@ import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
 import 'package:testing_api/controllers/chosen_category_controller.dart';
 import 'package:testing_api/controllers/menu_item_controller.dart';
+import 'package:testing_api/controllers/menu_item_counter_controller.dart';
 import 'package:testing_api/models/category_page.dart';
 import 'package:testing_api/models/menu_items_page.dart';
 import 'package:testing_api/services/api.dart';
+import 'package:testing_api/services/apis_services/cart_apis/cart_apis.dart';
 import 'package:testing_api/services/apis_services/category_apis/category_apis.dart';
 import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
 import 'package:testing_api/widgets/customer_drawer.dart';
@@ -27,6 +29,9 @@ class _MenuState extends State<Menu> {
   final ChosenCategoryController categoryController =
       Get.find<ChosenCategoryController>();
   final MenuItemController menuController = Get.find<MenuItemController>();
+
+  final MenuItemCounterController counterController =
+      Get.find<MenuItemCounterController>();
   bool isLoading = true;
   @override
   void initState() {
@@ -117,25 +122,26 @@ class _MenuState extends State<Menu> {
                 ),
               ),
             ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          await Get.bottomSheet(
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              child: MenuBottomsheet(),
+      floatingActionButton: userRole == UserRole.Delivery
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () async {
+                if (userRole == UserRole.Manager) {
+                  await addMenuItemFloatingButton();
+                } else {
+                  //iteratre over counterController
+                  //values that are > 0
+                  //will call PostCartApi(menuItem[index].title , Api.box.read('username') , counterController.controller[index].value),
+                  addMenuItemsToCart();
+                }
+              },
+              label: Text(userRole == UserRole.Manager
+                  ? "Add Menu Item"
+                  : "Check To Cart"),
+              icon: Icon(userRole == UserRole.Manager
+                  ? Icons.add
+                  : Icons.shopping_cart),
             ),
-            isDismissible: true,
-            enableDrag: true,
-            backgroundColor: Colors.transparent,
-          );
-        },
-        label: const Text("Add Menu Item"),
-        icon: const Icon(Icons.add),
-      ),
       drawer: userRole == UserRole.Manager
           ? ManagerDrawer()
           : userRole == UserRole.Customer
@@ -143,6 +149,28 @@ class _MenuState extends State<Menu> {
               : null,
       drawerEnableOpenDragGesture: true,
     );
+  }
+
+  Future<void> addMenuItemFloatingButton() async {
+    await Get.bottomSheet(
+      MenuBottomsheet(),
+      isDismissible: true,
+      enableDrag: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  Future<void> addMenuItemsToCart() async {
+    for (int i = 0; i < 1050; i++) {
+      if (counterController.counter[i].value > 0) {
+        bool result = await CartApis.postCart(
+          menuItemId: menuController.menuItems[i].id!,
+          quantity: counterController.counter[i].value,
+          userId: Api.box.read('userId'),
+        );
+        if (result) {}
+      }
+    }
   }
 
   @override
