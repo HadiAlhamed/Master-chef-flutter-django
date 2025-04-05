@@ -13,4 +13,10 @@ class MenuItemCounterController extends GetxController {
       counter[index].value--;
     }
   }
+
+  void clear() {
+    counter = List.generate(1050, (index) {
+      return 0.obs;
+    });
+  }
 }
