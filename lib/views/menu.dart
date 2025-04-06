@@ -172,13 +172,21 @@ class _MenuState extends State<Menu> {
   Future<void> addMenuItemsToCart() async {
     if (!counterController.needUpdate) return;
     await CartApis.deleteAllCartItems();
+    cartController.clear();
+    print("updating cart items....");
     for (int i = 0; i < 1050; i++) {
       if (counterController.counter[i].value > 0) {
         bool result = await CartApis.addCartItem(
           menuItemId: menuController.menuItems[i].id!,
+          menuItemTitle: menuController.menuItems[i].title,
           quantity: counterController.counter[i].value,
           userId: Api.box.read('userId'),
         );
+        if (result) {
+          double totalPrice = double.parse(menuController.menuItems[i].price) *
+              (counterController.counter[i].value);
+          cartController.addToTotalBill(totalPrice);
+        }
       }
     }
     counterController.changeNeedUpdate(false);
