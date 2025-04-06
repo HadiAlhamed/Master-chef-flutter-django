@@ -1,9 +1,13 @@
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:testing_api/controllers/cart_controller.dart';
 import 'dart:convert';
 import 'package:testing_api/controllers/chosen_category_controller.dart';
+import 'package:testing_api/controllers/customer_controller.dart';
+import 'package:testing_api/controllers/delivery_crew_controller.dart';
 import 'package:testing_api/controllers/menu_item_controller.dart';
 import 'package:testing_api/controllers/menu_item_counter_controller.dart';
+import 'package:testing_api/controllers/orders_controller.dart';
 import 'package:testing_api/models/user.dart';
 import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/http_client/my_http_client.dart';
@@ -15,6 +19,14 @@ class AuthApis {
       Get.find<ChosenCategoryController>();
   static final MenuItemCounterController menuItemCounterController =
       Get.find<MenuItemCounterController>();
+  static final CartController cartController = Get.find<CartController>();
+
+  static final DeliveryCrewController deliveryCrewController =
+      Get.find<DeliveryCrewController>();
+  static final CustomerController customerController =
+      Get.find<CustomerController>();
+  static final OrdersController ordersController = Get.find<OrdersController>();
+
   // Enhanced cookie/CSRF handling
   static String? _extractCookie(String? headers, String name) {
     return RegExp('$name=([^;]+)').firstMatch(headers ?? '')?.group(1);
@@ -76,18 +88,6 @@ class AuthApis {
     return false;
   }
 
-  static Future<void> _cleanupAuth() async {
-    await Api.box.remove('authHeaders');
-    await Api.box.remove('csrfToken');
-    await Api.box.remove('sessionId');
-    await Api.box.remove('username');
-    menuItemController.clear();
-    categoryController.clear();
-    menuItemCounterController.clear();
-    MyHttpClient.client.close(); // Properly close old client
-    MyHttpClient.client = http.Client(); //
-  }
-
   static Future<bool> signup(
       {required String username,
       required String password,
@@ -147,6 +147,22 @@ class AuthApis {
       print('Network Error: $e');
     }
     return false;
+  }
+
+  static Future<void> _cleanupAuth() async {
+    await Api.box.remove('authHeaders');
+    await Api.box.remove('csrfToken');
+    await Api.box.remove('sessionId');
+    await Api.box.remove('username');
+    menuItemController.clear();
+    categoryController.clear();
+    menuItemCounterController.clear();
+    cartController.clear();
+    deliveryCrewController.init();
+    ordersController.clear();
+    customerController.init();
+    MyHttpClient.client.close(); // Properly close old client
+    MyHttpClient.client = http.Client(); //
   }
 
   static void dispose() {
