@@ -10,6 +10,7 @@ import 'package:testing_api/views/categories_page.dart';
 import 'package:testing_api/views/customers_page.dart';
 import 'package:testing_api/views/delivery_crew_page.dart';
 import 'package:testing_api/views/menu.dart';
+import 'package:testing_api/views/orders_page.dart';
 import 'package:testing_api/widgets/drawer_tile.dart';
 
 class CustomerDrawer extends StatelessWidget {
@@ -39,9 +40,17 @@ class CustomerDrawer extends StatelessWidget {
             ),
           ),
           DrawerTile(
-              title: "My Orders",
-              subtitle: "view and assign orders to delivery crew",
-              icon: Icons.manage_accounts),
+            title: "Orders",
+            subtitle: "view my orders",
+            icon: Icons.manage_accounts,
+            onTap: () {
+              Get.off(
+                () => OrdersPage(),
+                transition: Transition.leftToRightWithFade,
+                duration: const Duration(milliseconds: 400),
+              );
+            },
+          ),
           DrawerTile(
             title: "Menu",
             subtitle: "view all menu items",
@@ -56,7 +65,7 @@ class CustomerDrawer extends StatelessWidget {
           ),
           DrawerTile(
             title: "My Cart",
-            subtitle: "view all menu items",
+            subtitle: "view menu items in my cart",
             icon: Icons.shopping_cart,
             onTap: () async {
               await addMenuItemsToCart();
