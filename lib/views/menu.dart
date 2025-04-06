@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
+import 'package:testing_api/controllers/cart_controller.dart';
 import 'package:testing_api/controllers/chosen_category_controller.dart';
 import 'package:testing_api/controllers/menu_item_controller.dart';
 import 'package:testing_api/controllers/menu_item_counter_controller.dart';
@@ -11,6 +12,7 @@ import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/apis_services/cart_apis/cart_apis.dart';
 import 'package:testing_api/services/apis_services/category_apis/category_apis.dart';
 import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
+import 'package:testing_api/views/cart_page.dart';
 import 'package:testing_api/widgets/customer_drawer.dart';
 import 'package:testing_api/widgets/main_appbar.dart';
 import 'package:testing_api/widgets/manager_drawer.dart';
@@ -32,6 +34,8 @@ class _MenuState extends State<Menu> {
 
   final MenuItemCounterController counterController =
       Get.find<MenuItemCounterController>();
+
+  final CartController cartController = Get.find<CartController>();
   bool isLoading = true;
   @override
   void initState() {
@@ -129,10 +133,13 @@ class _MenuState extends State<Menu> {
                 if (userRole == UserRole.Manager) {
                   await addMenuItemFloatingButton();
                 } else {
-                  //iteratre over counterController
-                  //values that are > 0
-                  //will call PostCartApi(menuItem[index].title , Api.box.read('username') , counterController.controller[index].value),
-                  addMenuItemsToCart();
+                  await addMenuItemsToCart();
+                  Get.off(
+                    () => CartPage(),
+                    preventDuplicates: false,
+                    transition: Transition.fadeIn,
+                    duration: const Duration(milliseconds: 300),
+                  );
                 }
               },
               label: Text(userRole == UserRole.Manager
@@ -161,16 +168,18 @@ class _MenuState extends State<Menu> {
   }
 
   Future<void> addMenuItemsToCart() async {
+    if (!counterController.needUpdate) return;
+    await CartApis.deleteAllCartItems();
     for (int i = 0; i < 1050; i++) {
       if (counterController.counter[i].value > 0) {
-        bool result = await CartApis.postCart(
+        bool result = await CartApis.addCartItem(
           menuItemId: menuController.menuItems[i].id!,
           quantity: counterController.counter[i].value,
           userId: Api.box.read('userId'),
         );
-        if (result) {}
       }
     }
+    counterController.changeNeedUpdate(false);
   }
 
   @override
