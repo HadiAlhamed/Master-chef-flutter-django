@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:testing_api/models/order_model.dart';
+import 'package:testing_api/models/paginated_order.dart';
 import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/http_client/my_http_client.dart';
 
@@ -27,5 +29,42 @@ class OrderApis {
       print("Network Error : $e");
     }
     return false;
+  }
+
+  static Future<PaginatedOrder> getAllOrders({String? url}) async {
+    try {
+      final http.Response response = await MyHttpClient.client.get(
+        Uri.parse(url ?? '${Api.baseUrl}$orderApi'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': Api.box.read('csrfToken') ?? '',
+          if (Api.box.read('sessionId') != null)
+            'Cookie':
+                'sessionid=${Api.box.read('sessionId')}; csrftoken=${Api.box.read('csrfToken')}',
+        },
+      );
+      if (response.statusCode == 200) {
+        print("order Fetched successfully ...");
+        Map<String, dynamic> jsonData = jsonDecode(response.body);
+        print(jsonData);
+        List<OrderModel> list = (jsonData['results'] as List).map((item) {
+          return OrderModel.fromJson(item);
+        }).toList();
+        print(list);
+        return PaginatedOrder(
+          nextUrlPage: jsonData['next'],
+          orders: list,
+        );
+      } else {
+        print("Failed to get all orders : ${response.statusCode}");
+        print(jsonDecode(response.body));
+      }
+    } catch (e) {
+      print("Network Error : $e");
+    }
+    return PaginatedOrder(
+      nextUrlPage: null,
+      orders: [],
+    );
   }
 }
