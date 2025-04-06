@@ -3,14 +3,18 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
 import 'package:testing_api/controllers/cart_controller.dart';
+import 'package:testing_api/controllers/menu_item_counter_controller.dart';
 import 'package:testing_api/services/api.dart';
+import 'package:testing_api/services/apis_services/order_apis/order_apis.dart';
 import 'package:testing_api/text_styles.dart';
+import 'package:testing_api/views/menu.dart';
 import 'package:testing_api/widgets/cart_item_tile.dart';
 import 'package:testing_api/widgets/customer_drawer.dart';
 import 'package:testing_api/widgets/main_appbar.dart';
 import 'package:testing_api/widgets/manager_drawer.dart';
 import 'package:testing_api/widgets/menu_bottomsheet.dart';
 import 'package:testing_api/widgets/my_button.dart';
+import 'package:testing_api/widgets/my_snackbar.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -22,6 +26,9 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   UserRole userRole = UserRole.Customer;
   final CartController cartController = Get.find<CartController>();
+
+  final MenuItemCounterController counterController =
+      Get.find<MenuItemCounterController>();
   @override
   void initState() {
     print("Cart Page Loaded");
@@ -67,7 +74,29 @@ class _CartPageState extends State<CartPage> {
                           )
                         : index == cartController.cartItems.length + 1
                             ? MyButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  bool result = await OrderApis.addNewOrder();
+
+                                  Get.showSnackbar(
+                                    MySnackbar(
+                                        success: result,
+                                        title: "Placing Order",
+                                        message: result
+                                            ? "Order Placed Successfully"
+                                            : 'Failed To Place Order, Please Try Again Later'),
+                                  );
+                                  if (result) {
+                                    cartController.clear();
+                                    counterController.clear();
+                                    Get.off(
+                                      () => Menu(),
+                                      transition: Transition.downToUp,
+                                      duration:
+                                          const Duration(milliseconds: 400),
+                                      preventDuplicates: false,
+                                    );
+                                  }
+                                },
                                 title: "Place Order",
                                 color: Colors.amberAccent,
                               )
