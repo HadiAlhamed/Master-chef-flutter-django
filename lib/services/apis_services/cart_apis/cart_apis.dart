@@ -14,6 +14,7 @@ class CartApis {
   static Future<bool> addCartItem(
       {required int userId,
       required int menuItemId,
+      required String menuItemTitle,
       required int quantity}) async {
     print("adding menu Item $menuItemId to cart ...");
 
@@ -40,12 +41,8 @@ class CartApis {
         //will return a cart object handle it carefully;
         //add it to the cartController.cartItems
         Map<String, dynamic> jsonData = jsonDecode(response.body);
-        List<CartItem> list = (jsonData['results'] as List)
-            .map(
-              (item) => CartItem.fromJson(item),
-            )
-            .toList();
-        cartController.addAllToCart(list);
+        CartItem cartItem = CartItem.fromJson(jsonData, menuItemTitle);
+        cartController.addToCart(cartItem);
         return true;
       } else {
         print("Failed to add to cart .... ${response.statusCode}");
@@ -63,7 +60,7 @@ class CartApis {
     try {
       print(" CSRFTOKEN : ${Api.box.read('csrfToken')}");
 
-      final http.Response response = await MyHttpClient.client.post(
+      final http.Response response = await MyHttpClient.client.delete(
         Uri.parse('${Api.baseUrl}$cartApi'),
         headers: {
           'Content-Type': 'application/json',
