@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
 import 'package:testing_api/controllers/cart_controller.dart';
 import 'package:testing_api/controllers/menu_item_counter_controller.dart';
+import 'package:testing_api/controllers/orders_controller.dart';
 import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/apis_services/order_apis/order_apis.dart';
 import 'package:testing_api/text_styles.dart';
@@ -29,6 +30,10 @@ class _CartPageState extends State<CartPage> {
 
   final MenuItemCounterController counterController =
       Get.find<MenuItemCounterController>();
+
+      
+  final OrdersController ordersController =
+      Get.find<OrdersController>();
   @override
   void initState() {
     print("Cart Page Loaded");
@@ -88,6 +93,7 @@ class _CartPageState extends State<CartPage> {
                                   if (result) {
                                     cartController.clear();
                                     counterController.clear();
+                                    ordersController.changeNeedUpdate(true);
                                     Get.off(
                                       () => Menu(),
                                       transition: Transition.downToUp,
