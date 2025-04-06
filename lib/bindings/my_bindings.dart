@@ -7,6 +7,7 @@ import 'package:testing_api/controllers/delivery_crew_controller.dart';
 import 'package:testing_api/controllers/featured_controller.dart';
 import 'package:testing_api/controllers/menu_item_controller.dart';
 import 'package:testing_api/controllers/menu_item_counter_controller.dart';
+import 'package:testing_api/controllers/orders_controller.dart';
 import 'package:testing_api/controllers/passwordController.dart';
 
 class MyBindings extends Bindings {
@@ -20,5 +21,6 @@ class MyBindings extends Bindings {
     Get.put(ChosenCategoryController());
     Get.put(MenuItemController());
     Get.put(CartController());
+    Get.put(OrdersController());
   }
 }
