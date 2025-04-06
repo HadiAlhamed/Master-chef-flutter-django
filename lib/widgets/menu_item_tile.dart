@@ -28,94 +28,99 @@ class MenuItemTile extends StatelessWidget {
     final MenuItemController menuController = Get.find<MenuItemController>();
     return Card(
       // color: const Color.fromARGB(255, 210, 186, 186),
-      child: ListTile(
-        onTap: !enable
-            ? null
-            : () async {
-                print("Menu Item Id from Menu Item Tile : ${menuItem.id}");
+      elevation: 5,
+      margin: const EdgeInsets.only(bottom: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListTile(
+          onTap: !enable
+              ? null
+              : () async {
+                  print("Menu Item Id from Menu Item Tile : ${menuItem.id}");
 
-                await Get.bottomSheet(
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20)),
+                  await Get.bottomSheet(
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      child: MenuBottomsheet(
+                        menuItem: menuItem,
+                      ),
                     ),
-                    child: MenuBottomsheet(
-                      menuItem: menuItem,
-                    ),
-                  ),
-                );
-              },
-        contentPadding: const EdgeInsets.all(10),
-        title: Text(
-          enable ? menuItem.title : "${menuItem.title} (DELETED)",
-          style: TextStyle(
-            fontFamily: "Lobster",
-            color: Colors.amber,
-            fontSize: 20,
+                  );
+                },
+          contentPadding: const EdgeInsets.all(10),
+          title: Text(
+            enable ? menuItem.title : "${menuItem.title} (DELETED)",
+            style: TextStyle(
+              fontFamily: "Lobster",
+              color: Colors.amber,
+              fontSize: 20,
+            ),
           ),
-        ),
-        subtitle: Text(
-          "${menuItem.category!.title} , ${menuItem.price} \$",
-          style: TextStyle(
-            fontFamily: "Lobster",
+          subtitle: Text(
+            "${menuItem.category!.title} , ${menuItem.price} \$",
+            style: TextStyle(
+              fontFamily: "Lobster",
+            ),
           ),
+          trailing: userRole == UserRole.Customer
+              ? CounterWidget(index: index)
+              : userRole == UserRole.Manager
+                  ? IconButton(
+                      onPressed: !enable
+                          ? null
+                          : () async {
+                              AwesomeDialog(
+                                context: context,
+                                alignment: Alignment.center,
+                                animType: AnimType.leftSlide,
+                                dialogType: DialogType.warning,
+                                body: const Text(
+                                  "The menu item will be deleted",
+                                  textAlign: TextAlign.center,
+                                ),
+                                btnCancelText: "Delete",
+                                btnOkText: "Cancel",
+                                btnOkOnPress: () {},
+                                btnCancelOnPress: () async {
+                                  //delete menu item api
+                                  bool result = await MenuApis.deleteMenuItem(
+                                      menuItemId: menuItem.id!);
+                                  Get.showSnackbar(
+                                    GetSnackBar(
+                                      duration: const Duration(seconds: 5),
+                                      title: result ? "Info" : "Error",
+                                      message: result
+                                          ? "MenuItem Deleted From Menu"
+                                          : "An Error Has Occurred, try later.",
+                                      icon: Icon(
+                                          result ? Icons.check : Icons.error),
+                                      backgroundColor:
+                                          result ? Colors.green : Colors.red,
+                                    ),
+                                  );
+                                  if (result) {
+                                    //do something to menuItem Controller
+                                    menuController.deleteMenuItem(index);
+                                    menuController.changeNeedUpdate(true);
+                                  }
+                                },
+                              ).show();
+                            },
+                      icon: enable && userRole == UserRole.Manager
+                          ? Icon(
+                              Icons.remove_circle_outline,
+                              color: Colors.red,
+                            )
+                          : const SizedBox.shrink(),
+                    )
+                  : null,
         ),
-        trailing: userRole == UserRole.Customer
-            ? CounterWidget(index: index)
-            : userRole == UserRole.Manager
-                ? IconButton(
-                    onPressed: !enable
-                        ? null
-                        : () async {
-                            AwesomeDialog(
-                              context: context,
-                              alignment: Alignment.center,
-                              animType: AnimType.leftSlide,
-                              dialogType: DialogType.warning,
-                              body: const Text(
-                                "The menu item will be deleted",
-                                textAlign: TextAlign.center,
-                              ),
-                              btnCancelText: "Delete",
-                              btnOkText: "Cancel",
-                              btnOkOnPress: () {},
-                              btnCancelOnPress: () async {
-                                //delete menu item api
-                                bool result = await MenuApis.deleteMenuItem(
-                                    menuItemId: menuItem.id!);
-                                Get.showSnackbar(
-                                  GetSnackBar(
-                                    duration: const Duration(seconds: 5),
-                                    title: result ? "Info" : "Error",
-                                    message: result
-                                        ? "MenuItem Deleted From Menu"
-                                        : "An Error Has Occurred, try later.",
-                                    icon: Icon(
-                                        result ? Icons.check : Icons.error),
-                                    backgroundColor:
-                                        result ? Colors.green : Colors.red,
-                                  ),
-                                );
-                                if (result) {
-                                  //do something to menuItem Controller
-                                  menuController.deleteMenuItem(index);
-                                  menuController.changeNeedUpdate(true);
-                                  
-                                }
-                              },
-                            ).show();
-                          },
-                    icon: enable && userRole == UserRole.Manager
-                        ? Icon(
-                            Icons.remove_circle_outline,
-                            color: Colors.red,
-                          )
-                        : const SizedBox.shrink(),
-                  )
-                : null,
       ),
     );
   }

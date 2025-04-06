@@ -25,91 +25,97 @@ class CategoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     print("Category tile index : $index");
     return Card(
+      elevation: 5,
+      margin: const EdgeInsets.only(bottom: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       // color: const Color.fromARGB(255, 210, 186, 186),
-      child: ListTile(
-        onTap: !enable //update category item
-            ? null
-            : () async {
-                Get.bottomSheet(
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20)),
-                    ),
-                    child: CategoryBottomsheet(
-                      category: category,
-                      index: index,
-                    ),
-                  ),
-                );
-              },
-        enabled: enable,
-        contentPadding: const EdgeInsets.all(10),
-        title: Text(
-          enable
-              ? "${index + 1} ${category.title}"
-              : "${index + 1} ${category.title} (DELETED)",
-          style: TextStyle(
-            fontFamily: "Lobster",
-            color: Colors.amber,
-            fontSize: 20,
-          ),
-        ),
-        subtitle: Text(
-          category.slug,
-          style: TextStyle(
-            fontFamily: "Lobster",
-          ),
-        ),
-        trailing: IconButton(
-          onPressed: !enable
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListTile(
+          onTap: !enable //update category item
               ? null
               : () async {
-                  //delete Delivery guy from here
-                  //apply deleteDeliveryCrewApi here
-                  AwesomeDialog(
-                    context: context,
-                    alignment: Alignment.center,
-                    animType: AnimType.leftSlide,
-                    dialogType: DialogType.warning,
-                    body: const Text(
-                      "The category will be deleted from categories",
-                      textAlign: TextAlign.center,
+                  Get.bottomSheet(
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      child: CategoryBottomsheet(
+                        category: category,
+                        index: index,
+                      ),
                     ),
-                    btnCancelText: "Delete",
-                    btnOkText: "Cancel",
-                    btnOkOnPress: () {},
-                    btnCancelOnPress: () async {
-                      bool result = await CategoryApis.deleteCategory(
-                          categoryId: category.id!);
-                      //implement delete category here
-
-                      Get.showSnackbar(
-                        GetSnackBar(
-                          duration: const Duration(seconds: 5),
-                          title: result ? "Info" : "Error",
-                          message: result
-                              ? "User Added To Delivery Crew"
-                              : "An Error Has Occurred, try later.",
-                          icon: Icon(result ? Icons.check : Icons.error),
-                          backgroundColor: result ? Colors.green : Colors.red,
-                        ),
-                      );
-                      if (result) {
-                        categoryController.deleted[index].value = true;
-                        categoryController.changeNeedUpdate(true);
-                      }
-                    },
-                  ).show();
+                  );
                 },
-          icon: enable
-              ? Icon(
-                  Icons.remove_circle_outline,
-                  color: Colors.red,
-                )
-              : const SizedBox.shrink(),
+          enabled: enable,
+          contentPadding: const EdgeInsets.all(10),
+          title: Text(
+            enable
+                ? "${index + 1} ${category.title}"
+                : "${index + 1} ${category.title} (DELETED)",
+            style: TextStyle(
+              fontFamily: "Lobster",
+              color: Colors.amber,
+              fontSize: 20,
+            ),
+          ),
+          subtitle: Text(
+            category.slug,
+            style: TextStyle(
+              fontFamily: "Lobster",
+            ),
+          ),
+          trailing: IconButton(
+            onPressed: !enable
+                ? null
+                : () async {
+                    //delete Delivery guy from here
+                    //apply deleteDeliveryCrewApi here
+                    AwesomeDialog(
+                      context: context,
+                      alignment: Alignment.center,
+                      animType: AnimType.leftSlide,
+                      dialogType: DialogType.warning,
+                      body: const Text(
+                        "The category will be deleted from categories",
+                        textAlign: TextAlign.center,
+                      ),
+                      btnCancelText: "Delete",
+                      btnOkText: "Cancel",
+                      btnOkOnPress: () {},
+                      btnCancelOnPress: () async {
+                        bool result = await CategoryApis.deleteCategory(
+                            categoryId: category.id!);
+                        //implement delete category here
+
+                        Get.showSnackbar(
+                          GetSnackBar(
+                            duration: const Duration(seconds: 5),
+                            title: result ? "Info" : "Error",
+                            message: result
+                                ? "User Added To Delivery Crew"
+                                : "An Error Has Occurred, try later.",
+                            icon: Icon(result ? Icons.check : Icons.error),
+                            backgroundColor: result ? Colors.green : Colors.red,
+                          ),
+                        );
+                        if (result) {
+                          categoryController.deleted[index].value = true;
+                          categoryController.changeNeedUpdate(true);
+                        }
+                      },
+                    ).show();
+                  },
+            icon: enable
+                ? Icon(
+                    Icons.remove_circle_outline,
+                    color: Colors.red,
+                  )
+                : const SizedBox.shrink(),
+          ),
         ),
       ),
     );
