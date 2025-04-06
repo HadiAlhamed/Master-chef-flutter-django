@@ -47,7 +47,9 @@ class _CustomersPageState extends State<CustomersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MainAppBar(),
+      appBar: MainAppBar(
+        myTitle: "Customers",
+      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Container(

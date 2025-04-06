@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/auth/login.dart';
 import 'package:testing_api/services/apis_services/auth_apis/auth_apis.dart';
+import 'package:testing_api/text_styles.dart';
 import 'package:testing_api/widgets/my_snackbar.dart';
 
 class MainAppBar extends AppBar {
-  MainAppBar({super.key})
+  final String myTitle;
+  MainAppBar({required this.myTitle, super.key})
       : super(
+          title: Text(myTitle, style: atitleTextStyle1),
           actions: [
             // Your custom icon button
             IconButton(

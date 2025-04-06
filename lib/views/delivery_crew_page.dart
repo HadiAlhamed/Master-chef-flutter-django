@@ -59,7 +59,9 @@ class _DeliveryCrewPageState extends State<DeliveryCrewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MainAppBar(),
+      appBar: MainAppBar(
+        myTitle: "Delivery",
+      ),
       body: isLoading
           ? Center(child: const CircularProgressIndicator())
           : Container(

@@ -12,21 +12,20 @@ import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/apis_services/cart_apis/cart_apis.dart';
 import 'package:testing_api/services/apis_services/category_apis/category_apis.dart';
 import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
-import 'package:testing_api/views/cart_page.dart';
 import 'package:testing_api/widgets/customer_drawer.dart';
 import 'package:testing_api/widgets/main_appbar.dart';
 import 'package:testing_api/widgets/manager_drawer.dart';
 import 'package:testing_api/widgets/menu_bottomsheet.dart';
 import 'package:testing_api/widgets/menu_item_tile.dart';
 
-class Menu extends StatefulWidget {
-  const Menu({super.key});
+class CartPage extends StatefulWidget {
+  const CartPage({super.key});
 
   @override
-  State<Menu> createState() => _MenuState();
+  State<CartPage> createState() => _CartPageState();
 }
 
-class _MenuState extends State<Menu> {
+class _CartPageState extends State<CartPage> {
   UserRole userRole = UserRole.Customer;
   final ChosenCategoryController categoryController =
       Get.find<ChosenCategoryController>();
@@ -36,10 +35,10 @@ class _MenuState extends State<Menu> {
       Get.find<MenuItemCounterController>();
 
   final CartController cartController = Get.find<CartController>();
-  bool isLoading = true;
+  bool isLoading = false;
   @override
   void initState() {
-    print("Menu Page Loaded");
+    print("Cart Page Loaded");
 
     super.initState();
     if (Api.box.read("role").toString().toLowerCase() == 'manager') {
@@ -47,59 +46,13 @@ class _MenuState extends State<Menu> {
     } else if (Api.box.read("role").toString().toLowerCase() == 'delivery') {
       userRole = UserRole.Delivery;
     }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
-  }
-
-  Future<void> _fetchData() async {
-    //fetching menu items
-    if (menuController.needUpdate) {
-      MenuItemsPage menuItemsPage = await MenuApis.getMenuItems();
-      for (var item in menuItemsPage.menuItems) {
-        menuController.addMenuItem(menuItem: item);
-      }
-      while (menuItemsPage.nextPageUrl != null) {
-        menuItemsPage =
-            await MenuApis.getMenuItems(url: menuItemsPage.nextPageUrl);
-        for (var item in menuItemsPage.menuItems) {
-          menuController.addMenuItem(menuItem: item);
-        }
-      }
-      menuController.changeNeedUpdate(false);
-    }
-
-    //fetching categories
-    if (categoryController.needUpdate) {
-      CategoryPage categoryPage = await CategoryApis.getAllCategories();
-      if (categoryPage.categories.isNotEmpty) {
-        categoryController.changeCategory(
-            category: categoryPage.categories[0].title);
-      }
-      for (var item in categoryPage.categories) {
-        categoryController.addCategory(category: item);
-        categoryController.setCategoryId(name: item.title, id: item.id!);
-      }
-      while (categoryPage.nextPageUrl != null) {
-        categoryPage =
-            await CategoryApis.getAllCategories(url: categoryPage.nextPageUrl);
-        for (var item in categoryPage.categories) {
-          categoryController.addCategory(category: item);
-          categoryController.setCategoryId(name: item.title, id: item.id!);
-        }
-      }
-      categoryController.changeNeedUpdate(false);
-    }
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainAppBar(
-        myTitle: "Menu",
+        myTitle: "My Cart",
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

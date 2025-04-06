@@ -68,7 +68,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MainAppBar(),
+      appBar: MainAppBar(
+        myTitle: "Categories",
+      ),
       body: Obx(
         () {
           if (categoryController.isLoading.value) {
