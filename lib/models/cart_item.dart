@@ -5,8 +5,10 @@ class CartItem {
   final int quantity;
   final String unitPrice;
   final String price;
+  final String? menuItemTitle;
 
   CartItem({
+    this.menuItemTitle,
     required this.cartId,
     required this.userId,
     required this.menuItemId,
@@ -15,7 +17,7 @@ class CartItem {
     required this.price,
   });
 
-  factory CartItem.fromJson(Map<String, dynamic> json) {
+  factory CartItem.fromJson(Map<String, dynamic> json, String menuItemTitle) {
     return CartItem(
       cartId: json['id'],
       userId: json['user'],
@@ -23,6 +25,7 @@ class CartItem {
       quantity: json['quantity'],
       unitPrice: json['unit_price'],
       price: json['price'],
+      menuItemTitle: menuItemTitle,
     );
   }
   Map<String, dynamic> toJsonApi() {
