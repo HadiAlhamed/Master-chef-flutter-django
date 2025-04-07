@@ -11,6 +11,11 @@ class OrdersController extends GetxController {
     needUpdate = value;
   }
 
+  void deleteOrderAt(int index) {
+    Orders.removeAt(index);
+    update();
+  }
+
   void changeIsLoading(bool value) {
     isLoading = value;
     update();
