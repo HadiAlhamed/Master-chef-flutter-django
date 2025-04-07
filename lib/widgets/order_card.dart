@@ -7,8 +7,10 @@ import 'package:testing_api/controllers/menu_item_controller.dart';
 import 'package:testing_api/controllers/orders_controller.dart';
 
 import 'package:testing_api/models/order_model.dart';
+import 'package:testing_api/services/apis_services/order_apis/order_apis.dart';
 import 'package:testing_api/text_styles.dart';
 import 'package:testing_api/views/delivery_crew_page.dart';
+import 'package:testing_api/widgets/my_snackbar.dart';
 
 class OrderCard extends StatelessWidget {
   final OrderModel order;
@@ -63,16 +65,38 @@ class OrderCard extends StatelessWidget {
                 ),
                 trailing: userRole == UserRole.Manager
                     ? IconButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          bool result = await OrderApis.deleteOrder(
+                              orderId: order.orderId);
+                          if (result) {
+                            ordersController.deleteOrderAt(index);
+                          }
+                          Get.showSnackbar(
+                            MySnackbar(
+                              success: result,
+                              title: "Delete Order",
+                              message: result
+                                  ? "Order Deleted Successfully"
+                                  : "Failed to delete order , please try later",
+                            ),
+                          );
+                        },
                         icon: Icon(
                           Icons.remove_circle_outline,
                           color: Colors.red,
+                          size: 30,
                         ),
                       )
                     : userRole == UserRole.Delivery
                         ? IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.check, color: Colors.green),
+                            onPressed: () async{
+                              
+                            },
+                            icon: Icon(
+                              Icons.check,
+                              color: Colors.green,
+                              size: 30,
+                            ),
                           )
                         : null,
               ),
