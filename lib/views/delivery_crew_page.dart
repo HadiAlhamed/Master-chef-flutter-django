@@ -1,9 +1,10 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
+
 import 'package:testing_api/Enums/user_role.dart';
 import 'package:testing_api/controllers/delivery_crew_controller.dart';
-import 'package:testing_api/models/user.dart';
 import 'package:testing_api/models/user_page.dart';
 import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/apis_services/group_apis/delivery_crew_apis.dart';
@@ -15,14 +16,15 @@ import 'package:testing_api/widgets/main_appbar.dart';
 import 'package:testing_api/widgets/manager_drawer.dart';
 
 class DeliveryCrewPage extends StatefulWidget {
-  const DeliveryCrewPage({super.key});
+  const DeliveryCrewPage({
+    super.key,
+  });
 
   @override
   State<DeliveryCrewPage> createState() => _DeliveryCrewPageState();
 }
 
 class _DeliveryCrewPageState extends State<DeliveryCrewPage> {
-  List<User> users = <User>[];
   bool isLoading = true;
   UserRole userRole = UserRole.Customer;
   final DeliveryCrewController crewController =
@@ -39,16 +41,16 @@ class _DeliveryCrewPageState extends State<DeliveryCrewPage> {
   }
 
   Future<void> _fetchDeliveryCrew() async {
-    users.clear();
+    crewController.init();
     UserPage userPage = await DeliveryCrewApis.getAllDeliveryCrew();
     for (var item in userPage.users) {
-      users.add(item);
+      crewController.addToUsers(item);
     }
     while (userPage.nextPageUrl != null) {
       userPage =
           await DeliveryCrewApis.getAllDeliveryCrew(url: userPage.nextPageUrl);
       for (var item in userPage.users) {
-        users.add(item);
+        crewController.addToUsers(item);
       }
     }
     setState(() {
@@ -67,13 +69,13 @@ class _DeliveryCrewPageState extends State<DeliveryCrewPage> {
           : Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.all(10),
-              child: users.isEmpty
+              child: crewController.users.isEmpty
                   ? const Text(
                       "You have no delivery crew.",
                       style: atitleTextStyle1,
                     )
                   : ListView.builder(
-                      itemCount: users.length,
+                      itemCount: crewController.users.length,
                       itemBuilder: (context, index) {
                         return AnimationConfiguration.staggeredList(
                           position: index,
@@ -84,7 +86,7 @@ class _DeliveryCrewPageState extends State<DeliveryCrewPage> {
                               child: Obx(
                                 () {
                                   return DeliveryCrewTile(
-                                    user: users[index],
+                                    user: crewController.users[index],
                                     userRole: userRole,
                                     index: index,
                                     enable:
