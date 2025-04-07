@@ -7,6 +7,7 @@ import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/apis_services/auth_apis/auth_apis.dart';
 import 'package:testing_api/services/apis_services/group_apis/role_api.dart';
 import 'package:testing_api/views/menu.dart';
+import 'package:testing_api/views/orders_page.dart';
 import 'package:testing_api/widgets/auth_input.dart';
 import 'package:testing_api/widgets/my_button.dart';
 
@@ -92,11 +93,19 @@ class Login extends StatelessWidget {
                         if (result) {
                           await RoleApi.getRole();
                           await AuthApis.getCurrentUserInfo();
-                          Get.off(
-                            () => Menu(),
-                            duration: const Duration(milliseconds: 500),
-                            transition: Transition.fadeIn,
-                          );
+                          if (Api.box.read('role') == 'customer') {
+                            Get.off(
+                              () => Menu(),
+                              duration: const Duration(milliseconds: 500),
+                              transition: Transition.fadeIn,
+                            );
+                          } else {
+                            Get.off(
+                              () => OrdersPage(),
+                              duration: const Duration(milliseconds: 500),
+                              transition: Transition.fadeIn,
+                            );
+                          }
                         } else {
                           await AwesomeDialog(
                             context: context,
