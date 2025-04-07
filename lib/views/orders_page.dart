@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
+import 'package:testing_api/controllers/chosen_category_controller.dart';
+import 'package:testing_api/controllers/menu_item_controller.dart';
 import 'package:testing_api/controllers/orders_controller.dart';
+import 'package:testing_api/models/category_page.dart';
+import 'package:testing_api/models/menu_items_page.dart';
 import 'package:testing_api/models/paginated_order.dart';
 import 'package:testing_api/services/api.dart';
+import 'package:testing_api/services/apis_services/category_apis/category_apis.dart';
+import 'package:testing_api/services/apis_services/menu_apis/menu_apis.dart';
 import 'package:testing_api/services/apis_services/order_apis/order_apis.dart';
 import 'package:testing_api/text_styles.dart';
 import 'package:testing_api/widgets/customer_drawer.dart';
@@ -23,6 +29,7 @@ class OrdersPage extends StatefulWidget {
 class _OrdersPageState extends State<OrdersPage> {
   UserRole userRole = UserRole.Customer;
   final OrdersController ordersController = Get.find<OrdersController>();
+
   @override
   void initState() {
     print("Orders Page Loaded");
@@ -39,6 +46,48 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Future<void> _fetchData() async {
+    if (userRole != UserRole.Customer) {
+      final MenuItemController menuController = Get.find<MenuItemController>();
+
+      final ChosenCategoryController categoryController =
+          Get.find<ChosenCategoryController>();
+      if (menuController.needUpdate) {
+        MenuItemsPage menuItemsPage = await MenuApis.getMenuItems();
+        for (var item in menuItemsPage.menuItems) {
+          menuController.addMenuItem(menuItem: item);
+        }
+        while (menuItemsPage.nextPageUrl != null) {
+          menuItemsPage =
+              await MenuApis.getMenuItems(url: menuItemsPage.nextPageUrl);
+          for (var item in menuItemsPage.menuItems) {
+            menuController.addMenuItem(menuItem: item);
+          }
+        }
+        menuController.changeNeedUpdate(false);
+      }
+
+      //fetching categories
+      if (categoryController.needUpdate) {
+        CategoryPage categoryPage = await CategoryApis.getAllCategories();
+        if (categoryPage.categories.isNotEmpty) {
+          categoryController.changeCategory(
+              category: categoryPage.categories[0].title);
+        }
+        for (var item in categoryPage.categories) {
+          categoryController.addCategory(category: item);
+          categoryController.setCategoryId(name: item.title, id: item.id!);
+        }
+        while (categoryPage.nextPageUrl != null) {
+          categoryPage = await CategoryApis.getAllCategories(
+              url: categoryPage.nextPageUrl);
+          for (var item in categoryPage.categories) {
+            categoryController.addCategory(category: item);
+            categoryController.setCategoryId(name: item.title, id: item.id!);
+          }
+        }
+        categoryController.changeNeedUpdate(false);
+      }
+    }
     print("fetching orders....");
     ordersController.clear();
     ordersController.changeIsLoading(true);
@@ -52,6 +101,7 @@ class _OrdersPageState extends State<OrdersPage> {
         ordersController.addOrder(item);
       }
     }
+
     ordersController.changeIsLoading(false);
     ordersController.changeNeedUpdate(false);
   }
