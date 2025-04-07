@@ -4,6 +4,7 @@ import 'package:testing_api/views/categories_page.dart';
 import 'package:testing_api/views/customers_page.dart';
 import 'package:testing_api/views/delivery_crew_page.dart';
 import 'package:testing_api/views/menu.dart';
+import 'package:testing_api/views/orders_page.dart';
 import 'package:testing_api/widgets/drawer_tile.dart';
 
 class ManagerDrawer extends StatelessWidget {
@@ -29,9 +30,19 @@ class ManagerDrawer extends StatelessWidget {
             ),
           ),
           DrawerTile(
-              title: "Manage Orders",
-              subtitle: "view and assign orders to delivery crew",
-              icon: Icons.manage_accounts),
+            title: "Manage Orders",
+            subtitle: "view and assign orders to delivery crew",
+            icon: Icons.manage_accounts,
+            onTap: () {
+              Get.off(
+                () => OrdersPage(),
+                transition: Transition.leftToRightWithFade,
+                duration: const Duration(
+                  milliseconds: 400,
+                ),
+              );
+            },
+          ),
           DrawerTile(
             title: "Delivery Crew",
             subtitle: "view all delivery crew of the app",

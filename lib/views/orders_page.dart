@@ -90,6 +90,8 @@ class _OrdersPageState extends State<OrdersPage> {
                       verticalOffset: 50.0,
                       child: FadeInAnimation(
                         child: OrderCard(
+                          index: len - index - 1,
+                          userRole: userRole,
                           order: ordersController.Orders[len - index - 1],
                         ),
                       ),

@@ -154,6 +154,7 @@ class AuthApis {
     await Api.box.remove('csrfToken');
     await Api.box.remove('sessionId');
     await Api.box.remove('username');
+    await Api.box.remove('userId');
     menuItemController.clear();
     categoryController.clear();
     menuItemCounterController.clear();
