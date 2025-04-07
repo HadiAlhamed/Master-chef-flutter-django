@@ -128,26 +128,29 @@ class _OrdersPageState extends State<OrdersPage> {
             }
             return Container(
               margin: const EdgeInsets.all(10),
-              child: ListView.builder(
-                itemCount: ordersController.Orders.length,
-                itemBuilder: (context, index) {
-                  int len = ordersController.Orders.length;
-                  return AnimationConfiguration.staggeredGrid(
-                    columnCount: 1,
-                    position: index,
-                    duration: const Duration(milliseconds: 400),
-                    child: SlideAnimation(
-                      verticalOffset: 50.0,
-                      child: FadeInAnimation(
-                        child: OrderCard(
-                          index: len - index - 1,
-                          userRole: userRole,
-                          order: ordersController.Orders[len - index - 1],
+              child: RefreshIndicator(
+                onRefresh: _fetchData,
+                child: ListView.builder(
+                  itemCount: ordersController.Orders.length,
+                  itemBuilder: (context, index) {
+                    int len = ordersController.Orders.length;
+                    return AnimationConfiguration.staggeredGrid(
+                      columnCount: 1,
+                      position: index,
+                      duration: const Duration(milliseconds: 400),
+                      child: SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: OrderCard(
+                            index: len - index - 1,
+                            userRole: userRole,
+                            order: ordersController.Orders[len - index - 1],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             );
           }),
