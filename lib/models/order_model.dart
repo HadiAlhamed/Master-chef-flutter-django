@@ -8,10 +8,11 @@ import 'package:testing_api/models/order_item_model.dart';
 class OrderModel {
   final int orderId;
   final int userId;
-  final bool status;
+  bool status;
+  int? deliveryCrew;
   final String total;
   final String createdAt;
-  final String updatedAt;
+  String updatedAt;
   final List<OrderItemModel> orderItems;
 
   OrderModel({
@@ -19,6 +20,7 @@ class OrderModel {
     required this.status,
     required this.userId,
     required this.total,
+    this.deliveryCrew,
     required this.createdAt,
     required this.updatedAt,
     required this.orderItems,
@@ -31,12 +33,14 @@ class OrderModel {
     String? createdAt,
     String? updatedAt,
     bool? status,
+    int? deliveryCrew,
     List<OrderItemModel>? orderItems,
   }) {
     return OrderModel(
       orderId: orderId ?? this.orderId,
       userId: userId ?? this.userId,
       status: status ?? this.status,
+      deliveryCrew: deliveryCrew ?? this.deliveryCrew,
       total: total ?? this.total,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -49,6 +53,7 @@ class OrderModel {
       'id': orderId,
       'user': userId,
       'status': status,
+      'delivery_crew': deliveryCrew,
       'total': total,
       'created_at': createdAt,
       'updated_at': updatedAt,
@@ -62,6 +67,7 @@ class OrderModel {
       orderId: json['id'] as int,
       userId: json['user'] as int,
       status: json['status'] ?? false,
+      deliveryCrew: json['delivery_crew'],
       total: json['total'] as String,
       createdAt: json['created_at'] as String,
       updatedAt: json['updated_at'] as String,
