@@ -93,6 +93,40 @@ class OrderApis {
     return false;
   }
 
+  static Future<bool> updateOrderStatusByDelivery({
+    required int orderId,
+    required int status,
+  }) async {
+    print("update order status with id : $orderId");
+    try {
+      final http.Response response = await MyHttpClient.client.patch(
+        Uri.parse('${Api.baseUrl}$orderApi$orderId/status/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': Api.box.read('csrfToken') ?? '',
+          if (Api.box.read('sessionId') != null)
+            'Cookie':
+                'sessionid=${Api.box.read('sessionId')}; csrftoken=${Api.box.read('csrfToken')}',
+        },
+        body: jsonEncode(
+          {
+            'status': status,
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        print("order status updated successfully ...");
+        return true;
+      } else {
+        print("Failed to update order status  : ${response.statusCode}");
+        print(jsonDecode(response.body));
+      }
+    } catch (e) {
+      print("Network Error : $e");
+    }
+    return false;
+  }
+
   static Future<PaginatedOrder> getAllOrders({String? url}) async {
     try {
       final http.Response response = await MyHttpClient.client.get(
