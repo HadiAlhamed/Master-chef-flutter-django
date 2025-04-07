@@ -12,7 +12,7 @@ class MySnackbar extends GetSnackBar {
           backgroundColor: success ? Colors.green : Colors.red,
           title: title,
           message: message,
-          duration: const Duration(seconds: 5),
+          duration: const Duration(seconds: 3),
           icon: Icon(success ? Icons.check : Icons.error),
           borderRadius: 15,
         );
