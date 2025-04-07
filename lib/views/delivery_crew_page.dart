@@ -100,17 +100,19 @@ class _DeliveryCrewPageState extends State<DeliveryCrewPage> {
                       },
                     ),
             ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Get.off(
-            () => CustomersPage(addToDelivery: true),
-            transition: Transition.fade,
-            duration: const Duration(milliseconds: 400),
-          );
-        },
-        label: const Text("Add Delivery"),
-        icon: const Icon(Icons.add),
-      ),
+      floatingActionButton: crewController.pickDelivery
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () {
+                Get.off(
+                  () => CustomersPage(addToDelivery: true),
+                  transition: Transition.fade,
+                  duration: const Duration(milliseconds: 400),
+                );
+              },
+              label: const Text("Add Delivery"),
+              icon: const Icon(Icons.add),
+            ),
       drawer: userRole == UserRole.Manager
           ? ManagerDrawer()
           : userRole == UserRole.Customer
@@ -123,6 +125,7 @@ class _DeliveryCrewPageState extends State<DeliveryCrewPage> {
   @override
   void dispose() {
     super.dispose();
+    crewController.changePickDelivery(value: false);
     crewController.init();
   }
 }
