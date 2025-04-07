@@ -89,12 +89,23 @@ class OrderCard extends StatelessWidget {
                       )
                     : userRole == UserRole.Delivery
                         ? IconButton(
-                            onPressed: () async{
-                              
+                            onPressed: () async {
+                              bool result =
+                                  await OrderApis.updateOrderStatusByDelivery(
+                                orderId: order.orderId,
+                                status: order.status ? 0 : 1,
+                              );
+                              if (result) {
+                                ordersController.setStatusFor(
+                                    index: index, status: !order.status);
+                              }
+                              print(result);
                             },
                             icon: Icon(
-                              Icons.check,
-                              color: Colors.green,
+                              order.status
+                                  ? Icons.remove_circle_outline
+                                  : Icons.check,
+                              color: order.status ? Colors.red : Colors.green,
                               size: 30,
                             ),
                           )
