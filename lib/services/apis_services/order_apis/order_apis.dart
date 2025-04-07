@@ -65,6 +65,34 @@ class OrderApis {
     return false;
   }
 
+  static Future<bool> deleteOrder({
+    required int orderId,
+  }) async {
+    print("Deleting order with id : $orderId");
+    try {
+      final http.Response response = await MyHttpClient.client.delete(
+        Uri.parse('${Api.baseUrl}$orderApi$orderId/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': Api.box.read('csrfToken') ?? '',
+          if (Api.box.read('sessionId') != null)
+            'Cookie':
+                'sessionid=${Api.box.read('sessionId')}; csrftoken=${Api.box.read('csrfToken')}',
+        },
+      );
+      if (response.statusCode == 204) {
+        print("order deleted successfully ...");
+        return true;
+      } else {
+        print("Failed to delete order   : ${response.statusCode}");
+        print(jsonDecode(response.body));
+      }
+    } catch (e) {
+      print("Network Error : $e");
+    }
+    return false;
+  }
+
   static Future<PaginatedOrder> getAllOrders({String? url}) async {
     try {
       final http.Response response = await MyHttpClient.client.get(
