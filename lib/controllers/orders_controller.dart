@@ -5,6 +5,8 @@ class OrdersController extends GetxController {
   bool needUpdate = true;
   List<OrderModel> Orders = [];
   bool isLoading = true;
+  int orderIdToPick = 0;
+  int indexOfOrder = 0;
   void changeNeedUpdate(bool value) {
     needUpdate = value;
   }
@@ -16,6 +18,21 @@ class OrdersController extends GetxController {
 
   void addOrder(OrderModel order) {
     Orders.add(order);
+  }
+
+  void setOrderToPickFor({required int id, required int index}) {
+    orderIdToPick = id;
+    indexOfOrder = index;
+  }
+
+  void setDeliveryFor({required int deliveryId}) {
+    Orders[indexOfOrder].deliveryCrew = deliveryId;
+    update();
+  }
+
+  void setStatusFor({required int index, required bool status}) {
+    Orders[index].status = status;
+    update();
   }
 
   void clear() {
