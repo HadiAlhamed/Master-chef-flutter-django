@@ -2,11 +2,14 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/auth/login.dart';
+import 'package:testing_api/controllers/auth_loading_controller.dart';
 import 'package:testing_api/controllers/passwordController.dart';
 import 'package:testing_api/services/apis_services/auth_apis/auth_apis.dart';
 import 'package:testing_api/views/menu.dart';
+import 'package:testing_api/views/orders_page.dart';
 import 'package:testing_api/widgets/auth_input.dart';
 import 'package:testing_api/widgets/my_button.dart';
+import 'package:testing_api/widgets/my_snackbar.dart';
 
 class Signup extends StatelessWidget {
   Signup({super.key});
@@ -14,6 +17,8 @@ class Signup extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final AuthLoadingController authLoadingController =
+      Get.find<AuthLoadingController>();
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -85,32 +90,42 @@ class Signup extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 20),
-                  MyButton(
-                    title: "Signup",
-                    color: Colors.redAccent,
-                    onPressed: () async {
-                      if (formState.currentState!.validate()) {
-                        bool result = await AuthApis.signup(
-                          username: usernameController.text,
-                          password: passwordController.text,
-                          email: emailController.text,
+                  GetBuilder<AuthLoadingController>(
+                      init: authLoadingController,
+                      builder: (controller) {
+                        return MyButton(
+                          isLoading: authLoadingController.isLoading,
+                          title: "Signup",
+                          color: Colors.redAccent,
+                          onPressed: () async {
+                            if (formState.currentState!.validate()) {
+                              bool result = await AuthApis.signup(
+                                username: usernameController.text,
+                                password: passwordController.text,
+                                email: emailController.text,
+                              );
+                              if (result) {
+                                Get.off(
+                                  () => OrdersPage(),
+                                  duration: const Duration(milliseconds: 500),
+                                  transition: Transition.fadeIn,
+                                );
+                              } else {
+                                Get.showSnackbar(
+                                  MySnackbar(
+                                    success: false,
+                                    title: 'Error',
+                                    message:
+                                        'Failed To Register , Please Try Later.',
+                                  ),
+                                );
+                              }
+                              //if result true go to home page
+                              // else show an error message
+                            }
+                          },
                         );
-                        if (result) {
-                          Get.off(
-                            () => Menu(),
-                            duration: const Duration(milliseconds: 500),
-                            transition: Transition.fadeIn,
-                          );
-                        } else {
-                          await AwesomeDialog(
-                            context: context,
-                          ).show();
-                        }
-                        //if result true go to home page
-                        // else show an error message
-                      }
-                    },
-                  ),
+                      }),
                   const SizedBox(height: 20),
                   TextButton(
                     child: const Text(

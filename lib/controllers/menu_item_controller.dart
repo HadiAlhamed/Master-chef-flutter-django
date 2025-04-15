@@ -9,7 +9,7 @@ class MenuItemController extends GetxController {
     (item) => false,
   );
   bool needUpdate = true;
-
+  bool isLoading = false;
   void addMenuItem({required MenuItem menuItem}) {
     menuItems.add(menuItem);
     menuItemTitleById[menuItem.id!] = menuItem.title;
@@ -25,8 +25,14 @@ class MenuItemController extends GetxController {
     // update();
   }
 
+  void changeIsLoading(bool value) {
+    isLoading = value;
+    update();
+  }
+
   void clear() {
     needUpdate = true;
+    isLoading = false;
     menuItems.clear();
     menuItemTitleById.clear();
     deleted = List.generate(

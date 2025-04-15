@@ -36,7 +36,6 @@ class _MenuState extends State<Menu> {
       Get.find<MenuItemCounterController>();
 
   final CartController cartController = Get.find<CartController>();
-  bool isLoading = true;
   @override
   void initState() {
     print("Menu Page Loaded");
@@ -53,46 +52,48 @@ class _MenuState extends State<Menu> {
 
   Future<void> _fetchData() async {
     //fetching menu items
-    if (menuController.needUpdate) {
-      MenuItemsPage menuItemsPage = await MenuApis.getMenuItems();
-      for (var item in menuItemsPage.menuItems) {
-        menuController.addMenuItem(menuItem: item);
-      }
-      while (menuItemsPage.nextPageUrl != null) {
-        menuItemsPage =
-            await MenuApis.getMenuItems(url: menuItemsPage.nextPageUrl);
+    if (categoryController.needUpdate || menuController.needUpdate) {
+      menuController.changeIsLoading(true);
+      if (menuController.needUpdate) {
+        menuController.clear();
+        MenuItemsPage menuItemsPage = await MenuApis.getMenuItems();
         for (var item in menuItemsPage.menuItems) {
           menuController.addMenuItem(menuItem: item);
         }
+        while (menuItemsPage.nextPageUrl != null) {
+          menuItemsPage =
+              await MenuApis.getMenuItems(url: menuItemsPage.nextPageUrl);
+          for (var item in menuItemsPage.menuItems) {
+            menuController.addMenuItem(menuItem: item);
+          }
+        }
+        menuController.changeNeedUpdate(false);
       }
-      menuController.changeNeedUpdate(false);
-    }
 
-    //fetching categories
-    if (categoryController.needUpdate) {
-      CategoryPage categoryPage = await CategoryApis.getAllCategories();
-      if (categoryPage.categories.isNotEmpty) {
-        categoryController.changeCategory(
-            category: categoryPage.categories[0].title);
-      }
-      for (var item in categoryPage.categories) {
-        categoryController.addCategory(category: item);
-        categoryController.setCategoryId(name: item.title, id: item.id!);
-      }
-      while (categoryPage.nextPageUrl != null) {
-        categoryPage =
-            await CategoryApis.getAllCategories(url: categoryPage.nextPageUrl);
+      //fetching categories
+      if (categoryController.needUpdate) {
+        categoryController.clear();
+        CategoryPage categoryPage = await CategoryApis.getAllCategories();
+        if (categoryPage.categories.isNotEmpty) {
+          categoryController.changeCategory(
+              category: categoryPage.categories[0].title);
+        }
         for (var item in categoryPage.categories) {
           categoryController.addCategory(category: item);
           categoryController.setCategoryId(name: item.title, id: item.id!);
         }
+        while (categoryPage.nextPageUrl != null) {
+          categoryPage = await CategoryApis.getAllCategories(
+              url: categoryPage.nextPageUrl);
+          for (var item in categoryPage.categories) {
+            categoryController.addCategory(category: item);
+            categoryController.setCategoryId(name: item.title, id: item.id!);
+          }
+        }
+        categoryController.changeNeedUpdate(false);
       }
-      categoryController.changeNeedUpdate(false);
+      menuController.changeIsLoading(false);
     }
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
   @override
@@ -101,33 +102,42 @@ class _MenuState extends State<Menu> {
       appBar: MainAppBar(
         myTitle: "Menu",
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : GetBuilder<MenuItemController>(
-              builder: (controller) => Container(
-                margin: const EdgeInsets.all(10),
-                child: ListView.builder(
-                  itemCount: menuController.menuItems.length,
-                  itemBuilder: (context, index) {
-                    return AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 400),
-                      child: SlideAnimation(
-                        verticalOffset: 50.0,
-                        child: FadeInAnimation(
-                          child: MenuItemTile(
-                            enable: !menuController.deleted[index],
-                            menuItem: menuController.menuItems[index],
-                            index: index,
-                            userRole: userRole,
-                          ),
+      body: GetBuilder<MenuItemController>(
+        init: menuController,
+        builder: (controller) {
+          if (menuController.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return Container(
+            margin: const EdgeInsets.all(10),
+            child: RefreshIndicator(
+              onRefresh: _fetchData,
+              child: ListView.builder(
+                itemCount: menuController.menuItems.length,
+                itemBuilder: (context, index) {
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 400),
+                    child: SlideAnimation(
+                      verticalOffset: 50.0,
+                      child: FadeInAnimation(
+                        child: MenuItemTile(
+                          enable: !menuController.deleted[index],
+                          menuItem: menuController.menuItems[index],
+                          index: index,
+                          userRole: userRole,
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             ),
+          );
+        },
+      ),
       floatingActionButton: userRole == UserRole.Delivery
           ? null
           : FloatingActionButton.extended(

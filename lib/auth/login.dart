@@ -1,7 +1,7 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/auth/signup.dart';
+import 'package:testing_api/controllers/auth_loading_controller.dart';
 import 'package:testing_api/controllers/passwordController.dart';
 import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/apis_services/auth_apis/auth_apis.dart';
@@ -10,17 +10,21 @@ import 'package:testing_api/views/menu.dart';
 import 'package:testing_api/views/orders_page.dart';
 import 'package:testing_api/widgets/auth_input.dart';
 import 'package:testing_api/widgets/my_button.dart';
+import 'package:testing_api/widgets/my_snackbar.dart';
 
 class Login extends StatelessWidget {
   Login({super.key});
   final GlobalKey<FormState> formState = GlobalKey<FormState>();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final AuthLoadingController authLoadingController =
+      Get.find<AuthLoadingController>();
+  final Passwordcontroller getPasswordcontroller =
+      Get.find<Passwordcontroller>();
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    final Passwordcontroller getPasswordcontroller =
-        Get.find<Passwordcontroller>();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -78,40 +82,57 @@ class Login extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 20),
-                  MyButton(
-                    title: "Login",
-                    color: Colors.amber,
-                    onPressed: () async {
-                      if (formState.currentState!.validate()) {
-                        bool result = await AuthApis.login(
-                          username: usernameController.text,
-                          password: passwordController.text,
-                        );
+                  GetBuilder<AuthLoadingController>(
+                    init: authLoadingController,
+                    builder: (controller) {
+                      return MyButton(
+                        isLoading: authLoadingController.isLoading,
+                        title: "Login",
+                        color: Colors.amber,
+                        onPressed: () async {
+                          print("in login...");
+                          authLoadingController.changeIsLoading(true);
+                          print("loading ...");
+                          if (formState.currentState!.validate()) {
+                            bool result = await AuthApis.login(
+                              username: usernameController.text,
+                              password: passwordController.text,
+                            );
 
-                        //if result true go to home page
-                        //else show an error message
-                        if (result) {
-                          await RoleApi.getRole();
-                          await AuthApis.getCurrentUserInfo();
-                          if (Api.box.read('role') == 'customer') {
-                            Get.off(
-                              () => Menu(),
-                              duration: const Duration(milliseconds: 500),
-                              transition: Transition.fadeIn,
-                            );
-                          } else {
-                            Get.off(
-                              () => OrdersPage(),
-                              duration: const Duration(milliseconds: 500),
-                              transition: Transition.fadeIn,
-                            );
+                            //if result true go to home page
+                            //else show an error message
+                            authLoadingController.changeIsLoading(false);
+
+                            if (result) {
+                              await RoleApi.getRole();
+                              await AuthApis.getCurrentUserInfo();
+                              if (Api.box.read('role') == 'customer') {
+                                Get.off(
+                                  () => Menu(),
+                                  duration: const Duration(milliseconds: 500),
+                                  transition: Transition.fadeIn,
+                                );
+                              } else {
+                                Get.off(
+                                  () => OrdersPage(),
+                                  duration: const Duration(milliseconds: 500),
+                                  transition: Transition.fadeIn,
+                                );
+                              }
+                            } else {
+                              //show error message
+                              Get.showSnackbar(
+                                MySnackbar(
+                                  success: false,
+                                  title: 'Error',
+                                  message:
+                                      'Failed To Login , Please Try Later.',
+                                ),
+                              );
+                            }
                           }
-                        } else {
-                          await AwesomeDialog(
-                            context: context,
-                          ).show();
-                        }
-                      }
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: 20),
@@ -125,6 +146,7 @@ class Login extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
+                      authLoadingController.changeIsLoading(false);
                       Get.off(
                         () => Signup(),
                         transition: Transition.fade,

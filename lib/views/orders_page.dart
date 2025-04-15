@@ -48,7 +48,7 @@ class _OrdersPageState extends State<OrdersPage> {
   Future<void> _fetchData() async {
     if (userRole != UserRole.Customer) {
       final MenuItemController menuController = Get.find<MenuItemController>();
-
+      
       final ChosenCategoryController categoryController =
           Get.find<ChosenCategoryController>();
       if (menuController.needUpdate) {

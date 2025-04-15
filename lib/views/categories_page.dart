@@ -78,31 +78,34 @@ class _CategoriesPageState extends State<CategoriesPage> {
           }
           return Container(
             margin: const EdgeInsets.all(10),
-            child: ListView.builder(
-              itemCount: categoryController.categories.length,
-              itemBuilder: (context, index) {
-                try {
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    duration: const Duration(milliseconds: 400),
-                    child: SlideAnimation(
-                      verticalOffset: 50.0,
-                      child: FadeInAnimation(
-                        child: Obx(
-                          () => CategoryTile(
-                            category: categoryController.categories[index],
-                            enable: !categoryController.deleted[index].value,
-                            index: index,
+            child: RefreshIndicator(
+              onRefresh: _fetchData,
+              child: ListView.builder(
+                itemCount: categoryController.categories.length,
+                itemBuilder: (context, index) {
+                  try {
+                    return AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 400),
+                      child: SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: Obx(
+                            () => CategoryTile(
+                              category: categoryController.categories[index],
+                              enable: !categoryController.deleted[index].value,
+                              index: index,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                } catch (e) {
-                  print("Error in listing categories : $e");
-                }
-                return null;
-              },
+                    );
+                  } catch (e) {
+                    print("Error in listing categories : $e");
+                  }
+                  return null;
+                },
+              ),
             ),
           );
         },

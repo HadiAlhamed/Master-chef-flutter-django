@@ -3,7 +3,6 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:testing_api/Enums/user_role.dart';
 import 'package:testing_api/controllers/customer_controller.dart';
-import 'package:testing_api/models/user.dart';
 import 'package:testing_api/services/api.dart';
 import 'package:testing_api/services/apis_services/group_apis/customer_apis.dart';
 import 'package:testing_api/text_styles.dart';
@@ -21,8 +20,6 @@ class CustomersPage extends StatefulWidget {
 }
 
 class _CustomersPageState extends State<CustomersPage> {
-  List<User> customers = <User>[];
-  bool isLoading = true;
   UserRole userRole = UserRole.Customer;
   final CustomerController customerController = Get.find<CustomerController>();
   @override
@@ -37,11 +34,9 @@ class _CustomersPageState extends State<CustomersPage> {
   }
 
   Future<void> _fetchCustomers() async {
-    customers.clear();
-    customers = await CustomerApis.getAllCustomers();
-    setState(() {
-      isLoading = false;
-    });
+    customerController.init();
+    customerController.customers = await CustomerApis.getAllCustomers();
+    customerController.changeIsLoading(false);
   }
 
   @override
@@ -50,18 +45,23 @@ class _CustomersPageState extends State<CustomersPage> {
       appBar: MainAppBar(
         myTitle: "Customers",
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.all(10),
-              child: customers.isEmpty
-                  ? const Text(
-                      "You have no customers",
-                      style: atitleTextStyle1,
-                    )
-                  : ListView.builder(
-                      itemCount: customers.length,
+      body: Obx(
+        () {
+          if (customerController.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return Container(
+            alignment: Alignment.center,
+            margin: const EdgeInsets.all(10),
+            child: customerController.customers.isEmpty
+                ? const Text(
+                    "You have no customers",
+                    style: atitleTextStyle1,
+                  )
+                : RefreshIndicator(
+                    onRefresh: _fetchCustomers,
+                    child: ListView.builder(
+                      itemCount: customerController.customers.length,
                       itemBuilder: (context, index) {
                         return AnimationConfiguration.staggeredList(
                           position: index,
@@ -71,7 +71,7 @@ class _CustomersPageState extends State<CustomersPage> {
                             child: FadeInAnimation(
                               child: !widget.addToDelivery
                                   ? CustomerTile(
-                                      user: customers[index],
+                                      user: customerController.customers[index],
                                       userRole: userRole,
                                       index: index,
                                       enable: true,
@@ -80,7 +80,8 @@ class _CustomersPageState extends State<CustomersPage> {
                                   : Obx(
                                       () {
                                         return CustomerTile(
-                                          user: customers[index],
+                                          user: customerController
+                                              .customers[index],
                                           userRole: userRole,
                                           index: index,
                                           enable: !customerController
@@ -94,7 +95,10 @@ class _CustomersPageState extends State<CustomersPage> {
                         );
                       },
                     ),
-            ),
+                  ),
+          );
+        },
+      ),
       drawer: userRole == UserRole.Manager
           ? ManagerDrawer()
           : userRole == UserRole.Customer

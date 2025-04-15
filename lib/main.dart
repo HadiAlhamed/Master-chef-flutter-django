@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+      initialBinding: MyBindings(),
       title: 'Flutter Demo',
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -28,11 +29,11 @@ class MyApp extends StatelessWidget {
             foregroundColor: Colors.amber,
             backgroundColor: Colors.white,
           )),
-      initialBinding: MyBindings(),
+      initialRoute: '/login',
       getPages: [
+        GetPage(name: '/login', page: () => Login()),
         GetPage(name: '/menu', page: () => Menu()),
       ],
-      home: Login(),
     );
   }
 }
